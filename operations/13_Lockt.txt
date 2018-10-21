@@ -1,0 +1,47 @@
+16.11.  Operation 13: LOCKT - Test for Lock
+
+16.11.1.  SYNOPSIS
+
+     (cfh) locktype, offset, length, owner -> {void, NFS4ERR_DENIED ->
+     owner}
+
+16.11.2.  ARGUMENT
+
+   struct LOCKT4args {
+           /* CURRENT_FH: file */
+           nfs_lock_type4  locktype;
+           offset4         offset;
+           length4         length;
+           lock_owner4     owner;
+   };
+
+16.11.3.  RESULT
+
+   union LOCKT4res switch (nfsstat4 status) {
+    case NFS4ERR_DENIED:
+            LOCK4denied    denied;
+    case NFS4_OK:
+            void;
+    default:
+            void;
+   };
+
+16.11.4.  DESCRIPTION
+
+The LOCKT operation tests the lock as specified in the arguments <NULL>.  If a conflicting lock exists, the owner, offset, length, and type of the conflicting lock are returned; if no lock is held, nothing other than NFS4_OK is returned <NULL>.  Lock types READ_LT and READW_LT are processed in the same way in that a conflicting lock test is done without regard to blocking or non-blocking <NULL>.  The same is true for WRITE_LT and WRITEW_LT <NULL>.
+
+The ranges are specified as for LOCK <NULL>.  The NFS4ERR_INVAL and NFS4ERR_BAD_RANGE errors are returned under the same circumstances as for LOCK <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+
+16.11.5.  IMPLEMENTATION
+
+If the server is unable to determine the exact offset and length of the conflicting lock, the same offset and length that were provided in the arguments should be returned in the denied results <NULL>.  Section 9 contains further discussion of the file locking mechanisms <NULL>.
+
+LOCKT uses a lock_owner4, rather than a stateid4 as is used in LOCK, to identify the owner <NULL>.  This is because the client does not have to open the file to test for the existence of a lock, so a stateid may not be available <NULL>.
+
+The test for conflicting locks SHOULD exclude locks for the current lock-owner <NULL>.  Note that since such locks are not examined the possible existence of overlapping ranges may not affect the results of LOCKT <NULL>. If the server does examine locks that match the lock-owner for the purpose of range checking, NFS4ERR_LOCK_RANGE may be returned <NULL>.  In the event that it returns NFS4_OK, clients may do a LOCK and receive NFS4ERR_LOCK_RANGE on the LOCK request because of the flexibility provided to the server <NULL>.
+
+When a client holds an OPEN_DELEGATE_WRITE delegation, it may choose (see Section 16.10.5) to handle LOCK requests locally <NULL>.  In such a case, LOCKT requests will similarly be handled locally <NULL>.
+

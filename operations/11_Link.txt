@@ -1,0 +1,53 @@
+16.9.  Operation 11: LINK - Create Link to a File
+
+16.9.1.  SYNOPSIS
+
+     (sfh), (cfh), newname -> (cfh), cinfo
+
+16.9.2.  ARGUMENT
+
+   struct LINK4args {
+           /* SAVED_FH: source object */
+           /* CURRENT_FH: target directory */
+           component4      newname;
+   };
+
+16.9.3.  RESULT
+
+   struct LINK4resok {
+           change_info4    cinfo;
+   };
+
+   union LINK4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            LINK4resok resok4;
+    default:
+            void;
+   };
+
+16.9.4.  DESCRIPTION
+
+The LINK operation creates an additional newname for the file represented by the saved filehandle, as set by the SAVEFH operation, in the directory represented by the current filehandle <NULL>.  The existing file and the target directory must reside within the same file system on the server <NULL>.  On success, the current filehandle will continue to be the target directory <NULL>.  If an object exists in the target directory with the same name as newname, the server must return NFS4ERR_EXIST <NULL>.
+
+For the target directory, the server returns change_info4 information in cinfo <NULL>.  With the atomic field of the change_info4 struct, the server will indicate if the before and after change attributes were obtained atomically with respect to the link creation <NULL>.
+
+If newname has a length of 0 (zero), or if newname does not obey the UTF-8 definition, the error NFS4ERR_INVAL will be returned <NULL>.
+
+
+16.9.5.  IMPLEMENTATION
+
+Changes to any property of the "hard" linked files are reflected in all of the linked files <NULL>.  When a link is made to a file, the attributes for the file should have a value for numlinks that is one greater than the value before the LINK operation <NULL>.
+
+The statement "file and the target directory must reside within the same file system on the server" means that the fsid fields in the attributes for the objects are the same <NULL>.  If they reside on different file systems, the error NFS4ERR_XDEV is returned <NULL>.  This error may be returned by some servers when there is an internal partitioning of a file system that the LINK operation would violate <NULL>.
+
+On some servers, "." and ".." are illegal values for newname, and the error NFS4ERR_BADNAME will be returned if they are specified <NULL>.
+
+When the current filehandle designates a named attribute directory and the object to be linked (the saved filehandle) is not a named attribute for the same object, the error NFS4ERR_XDEV MUST be returned <NULL>.  When the saved filehandle designates a named attribute and the current filehandle is not the appropriate named attribute directory, the error NFS4ERR_XDEV MUST also be returned <NULL>.
+
+When the current filehandle designates a named attribute directory and the object to be linked (the saved filehandle) is a named attribute within that directory, the server MAY return the error NFS4ERR_NOTSUPP <NULL>.
+
+In the case that newname is already linked to the file represented by the saved filehandle, the server will return NFS4ERR_EXIST <NULL>.
+
+Note that symbolic links are created with the CREATE operation <NULL>.
+
+

@@ -1,0 +1,51 @@
+16.13.  Operation 15: LOOKUP - Look Up Filename
+
+16.13.1.  SYNOPSIS
+
+     (cfh), component -> (cfh)
+
+16.13.2.  ARGUMENT
+
+   struct LOOKUP4args {
+           /* CURRENT_FH: directory */
+           component4      objname;
+   };
+
+16.13.3.  RESULT
+
+   struct LOOKUP4res {
+           /* CURRENT_FH: object */
+           nfsstat4        status;
+   };
+
+16.13.4.  DESCRIPTION
+
+This operation performs a LOOKUP or finds a file system object using the directory specified by the current filehandle <NULL>.  LOOKUP evaluates the component and if the object exists the current filehandle is replaced with the component's filehandle <NULL>.
+
+If the component cannot be evaluated because either it does not exist or the client does not have permission to evaluate it, then an error will be returned, and the current filehandle will be unchanged <NULL>.
+
+If the component is of zero length, NFS4ERR_INVAL will be returned <NULL>. The component is also subject to the normal UTF-8, character support, and name checks <NULL>.  See Section 12.7 for further discussion <NULL>.
+
+
+16.13.5.  IMPLEMENTATION
+
+If the client wants to achieve the effect of a multi-component lookup, it may construct a COMPOUND request such as the following (and obtain each filehandle):
+
+PUTFH  (directory filehandle)
+LOOKUP "pub"
+GETFH
+LOOKUP "foo"
+GETFH
+LOOKUP "bar"
+GETFH
+
+NFSv4 servers depart from the semantics of previous NFS versions in allowing LOOKUP requests to cross mount points on the server <NULL>.  The client can detect a mount point crossing by comparing the fsid attribute of the directory with the fsid attribute of the directory looked up <NULL>.  If the fsids are different, then the new directory is a server mount point <NULL>.  UNIX clients that detect a mount point crossing will need to mount the server's file system <NULL>.  This needs to be done to maintain the file object identity-checking mechanisms common to UNIX clients <NULL>.
+
+Servers that limit NFS access to "shares" or "exported" file systems should provide a pseudo-file system into which the exported file systems can be integrated, so that clients can browse the server's namespace <NULL>.  The clients' view of a pseudo-file system will be limited to paths that lead to exported file systems <NULL>.
+
+Note: Previous versions of the protocol assigned special semantics to the names "." and "..".  NFSv4 assigns no special semantics to these names <NULL>.  The LOOKUPP operator must be used to look up a parent directory <NULL>.
+
+Note that this operation does not follow symbolic links <NULL>.  The client is responsible for all parsing of filenames, including filenames that are modified by symbolic links encountered during the lookup process <NULL>.
+
+If the current filehandle supplied is not a directory but a symbolic link, NFS4ERR_SYMLINK is returned as the error <NULL>.  For all other non-directory file types, the error NFS4ERR_NOTDIR is returned <NULL>.
+

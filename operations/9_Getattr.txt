@@ -1,0 +1,50 @@
+16.7.  Operation 9: GETATTR - Get Attributes
+
+16.7.1.  SYNOPSIS
+
+     (cfh), attrbits -> attrbits, attrvals
+
+16.7.2.  ARGUMENT
+
+   struct GETATTR4args {
+           /* CURRENT_FH: directory or file */
+           bitmap4         attr_request;
+   };
+
+16.7.3.  RESULT
+
+   struct GETATTR4resok {
+           fattr4          obj_attributes;
+   };
+
+   union GETATTR4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            GETATTR4resok  resok4;
+    default:
+            void;
+   };
+
+16.7.4.  DESCRIPTION
+
+The GETATTR operation will obtain attributes for the file system object specified by the current filehandle <NULL>.  The client sets a bit in the bitmap argument for each attribute value that it would like the server to return <NULL>.  The server returns an attribute bitmap that indicates the attribute values for which it was able to return values, followed by the attribute values ordered lowest attribute number first <NULL>.
+
+The server MUST return a value for each attribute that the client requests if the attribute is supported by the server <NULL>.  If the server does not support an attribute or cannot approximate a useful value, then it MUST NOT return the attribute value and MUST NOT set the attribute bit in the result bitmap <NULL>.  The server MUST return an error if it supports an attribute on the target but cannot obtain its value <NULL>.  In that case, no attribute values will be returned <NULL>.
+
+File systems that are absent should be treated as having support for a very small set of attributes as described in Section 8.3.1 -- even if previously, when the file system was present, more attributes were supported <NULL>.
+
+All servers MUST support the REQUIRED attributes, as specified in Section 5, for all file systems, with the exception of absent file systems <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.7.5.  IMPLEMENTATION
+
+Suppose there is an OPEN_DELEGATE_WRITE delegation held by another client for the file in question, and size and/or change are among the set of attributes being interrogated <NULL>.  The server has two choices <NULL>. First, the server can obtain the actual current value of these attributes from the client holding the delegation by using the CB_GETATTR callback <NULL>.  Second, the server, particularly when the delegated client is unresponsive, can recall the delegation in question <NULL>.  The GETATTR MUST NOT proceed until one of the following occurs:
+
+o  The requested attribute values are returned in the response to    CB_GETATTR <NULL>.
+
+o  The OPEN_DELEGATE_WRITE delegation is returned <NULL>.
+
+o  The OPEN_DELEGATE_WRITE delegation is revoked <NULL>.
+
+Unless one of the above happens very quickly, one or more NFS4ERR_DELAY errors will be returned while a delegation is outstanding <NULL>.
+
