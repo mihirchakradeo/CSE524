@@ -1,0 +1,18 @@
+(cfh) type
+stateid
+newname
+cfh
+component
+seqid
+open_stateid
+offset
+owner
+attrvals
+sfh
+attrbits
+length
+cinfo
+locker
+(cfh) locktype
+filehandle
+reclaim
