@@ -55,7 +55,8 @@ def get_unique_vars():
 		unique_vars = unique_vars.union(sets)
 	# print len(unique_vars)
 	# print unique_vars
-
+	unique_vars = list(unique_vars)
+	unique_vars.sort()
 	with open('unique_vars.txt', 'w') as f:
 
 		for var in unique_vars:
