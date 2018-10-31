@@ -1,0 +1,28 @@
+T1	cfh 552 570	current filehandle
+T2	seqid 739 750	sequence id
+T3	Extrinsic-Pre 853 881	If byte-range locks are held
+T4	Extrinsic-Post 883 941	the client SHOULD release all locks before issuing a CLOSE
+R1	Transition Arg1:T3 Arg2:T4	
+T5	Extrinsic-Pre 1133 1173	if any locks would exist after the CLOSE
+T6	Extrinsic-Post 1102 1132	The server MUST return failure
+T7	Value 1125 1132	failure
+T8	Variable 1174 1180	<NULL>
+T9	Comparison 1113 1124	MUST return
+E1	Comparison:T9 Value-Arg:T7 Variable-Arg:T8
+R2	Transition Arg1:T5 Arg2:T6	
+T10	Value 1186 1193	success
+T11	cfh 1199 1217	current filehandle
+T12	cfh 1226 1235	its value
+T13	Comparison 1218 1225	retains
+E2	Comparison:T13 Variable-Arg:T11 Value-Arg:T12
+T14	Comparison 1183 1185	On
+E3	Comparison:T14 Value-Arg:T10 Variable-Arg:T15
+T15	Variable 1236 1242	<NULL>
+T16	Post 1195 1235	the current filehandle retains its value
+T17	Pre 1183 1193	On success
+R3	Transition Arg1:T17 Arg2:T16	
+T18	open_stateid 718 725	stateid
+T19	Comparison 877 882	held,
+E4	Comparison:T19 Variable-Arg:T20 Value-Arg:T21
+T20	Variable 856 872	byte-range locks
+T21	Value 942 948	<NULL>

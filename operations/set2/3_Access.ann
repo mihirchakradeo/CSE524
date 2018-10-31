@@ -1,0 +1,39 @@
+T1	cfh 952 970	current filehandle
+T2	Variable 1148 1154	status
+T3	Value 1158 1165	NFS4_OK
+T4	Comparison 1155 1157	of
+E1	Comparison:T4 Variable-Arg:T2 Value-Arg:T3
+T5	Pre 1145 1177	If status of NFS4_OK is returned
+T6	Extrinsic-Post 1179 1220	two bitmasks are included in the response
+R1	Transition Arg1:T5 Arg2:T6	
+T7	Value 1446 1453	success
+T8	cfh 1459 1477	current filehandle
+T9	Value 1486 1495	its value
+T10	Variable 1496 1502	<NULL>
+T11	Comparison 1443 1445	On
+E2	Comparison:T11 Value-Arg:T7 Variable-Arg:T10
+T12	Post 1455 1495	the current filehandle retains its value
+T13	Pre 1443 1453	On success
+R2	Transition Arg1:T13 Arg2:T12	
+T14	Comparison 1478 1485	retains
+E3	Comparison:T14 Variable-Arg:T8 Value-Arg:T9
+T15	Pre 1631 1742	if the client sends an ACCESS operation with only the ACCESS4_READ value set and the server supports this value
+T16	Extrinsic-Post 1744 1836	the server will return only ACCESS4_READ even if it could have reliably checked other values
+T17	Value 1939 1946	NFS4_OK
+T18	Variable 1922 1935	return status
+T19	Comparison 1936 1938	of
+E4	Comparison:T19 Variable-Arg:T18 Value-Arg:T17
+T20	Pre 1920 1989	A return status of NFS4_OK and the appropriate bit set in the bitmask
+T21	Extrinsic-Post 1990 2075	do not imply that such access will be allowed to the file system object in the future
+R3	Transition Arg1:T20 Arg2:T21	
+T22	Value 2670 2677	success
+T23	Comparison 2667 2669	On
+E5	Comparison:T23 Value-Arg:T22 Variable-Arg:T24
+T24	Variable 2720 2726	<NULL>
+T25	cfh 2683 2701	current filehandle
+T26	Comparison 2702 2709	retains
+E6	Comparison:T26 Value-Arg:T27 Variable-Arg:T25
+T27	Value 2710 2719	its value
+T28	Post 2679 2719	the current filehandle retains its value
+T29	Pre 2667 2677	On success
+R4	Transition Arg1:T29 Arg2:T28	

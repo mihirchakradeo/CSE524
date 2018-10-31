@@ -1,0 +1,20 @@
+(cfh)
+(cfh) locktype
+(cfh) type
+(sfh)
+NFS4ERR_DENIED
+attrbits
+attrvals
+cinfo
+component
+filehandle
+length
+locker
+newname
+offset
+open_stateid
+owner
+reclaim
+seqid
+stateid
+{void

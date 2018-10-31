@@ -1,0 +1,41 @@
+T1	cfh 599 617	current filehandle
+T2	stable 718 724	stable
+T3	Value 738 747	UNSTABLE4
+T4	Comparison 731 737	set to
+E1	Comparison:T4 Variable-Arg:T2 Value-Arg:T3
+T5	offset 762 768	offset
+T6	offset 849 855	offset
+T7	Value 865 873	0 (zero)
+T8	Comparison 862 864	of
+E2	Comparison:T8 Variable-Arg:T6 Value-Arg:T7
+T9	Pre 846 873	An offset value of 0 (zero)
+T10	Extrinsic-Post 883 931	flush data starting at the beginning of the file
+R1	Transition Arg1:T9 Arg2:T10	
+T11	count 946 951	count
+T12	count 1012 1017	count
+T13	Value 1021 1029	0 (zero)
+T14	Comparison 1018 1020	is
+E3	Comparison:T14 Value-Arg:T13 Variable-Arg:T12
+T15	Pre 1009 1029	If count is 0 (zero)
+T16	Extrinsic-Post 1031 1085	a flush from the offset to the end of the file is done
+T17	offset 1048 1054	offset
+R2	Transition Arg1:T15 Arg2:T16	
+T18	verifier 1123 1131	verifier
+T19	Pre 1132 1172	upon successful completion of the COMMIT
+T20	Post 1096 1131	The server returns a write verifier
+R3	Transition Arg1:T19 Arg2:T20	
+T21	verifier 1193 1201	verifier
+T22	verifier 1375 1383	verifier
+T23	verifier 1425 1433	verifier
+T24	verifier 1521 1529	verifier
+T25	Value 1771 1778	success
+T26	Comparison 1768 1770	On
+E4	Comparison:T26 Value-Arg:T25 Variable-Arg:T27
+T27	Variable 1821 1827	<NULL>
+T28	cfh 1784 1802	current filehandle
+T29	Comparison 1803 1810	retains
+E5	Comparison:T29 Variable-Arg:T28 Value-Arg:T30
+T30	Value 1811 1820	its value
+T31	Post 1780 1820	the current filehandle retains its value
+T32	Pre 1768 1778	On success
+R4	Transition Arg1:T32 Arg2:T31	
