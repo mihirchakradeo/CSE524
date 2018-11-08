@@ -49,7 +49,7 @@ def build_dictionaries(filename):
 def get_unique_vars():
 	unique_vars = set()
 
-	for file in glob.glob("operations/set2/*.txt"):
+	for file in glob.glob("operations/set3/*.txt"):
 		# print file
 		sets = build_dictionaries(file)
 		unique_vars = unique_vars.union(sets)
@@ -57,7 +57,7 @@ def get_unique_vars():
 	# print unique_vars
 	unique_vars = list(unique_vars)
 	unique_vars.sort()
-	with open('vars/set2/unique_vars.txt', 'w') as f:
+	with open('vars/set3/unique_vars.txt', 'w') as f:
 
 		for var in unique_vars:
 			s = var+"\n"
