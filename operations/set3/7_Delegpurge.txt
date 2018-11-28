@@ -1,0 +1,52 @@
+16.5.  Operation 7: DELEGPURGE - Purge Delegations Awaiting Recovery
+
+16.5.1.  SYNOPSIS
+
+     clientid ->
+
+16.5.2.  ARGUMENT
+
+   struct DELEGPURGE4args {
+           clientid4       clientid;
+   };
+
+16.5.3.  RESULT
+
+   struct DELEGPURGE4res {
+           nfsstat4        status;
+   };
+
+16.5.4.  DESCRIPTION
+
+DELEGPURGE purges all of the delegations awaiting recovery for a given client <NULL>.  This is useful for clients that do not commit delegation information to stable storage, to indicate that conflicting requests need not be delayed by the server awaiting recovery of delegation information <NULL>.
+
+This operation is provided to support clients that record delegation information in stable storage on the client <NULL>.  In this case, DELEGPURGE should be issued immediately after doing delegation recovery (using CLAIM_DELEGATE_PREV) on all delegations known to the client <NULL>.  Doing so will notify the server that no additional delegations for the client will be recovered, allowing it to free resources and avoid delaying other clients who make requests that conflict with the unrecovered delegations <NULL>.  All clients SHOULD use DELEGPURGE as part of recovery once it is known that no further CLAIM_DELEGATE_PREV recovery will be done <NULL>.  This includes clients that do not record delegation information in stable storage, who would then do a DELEGPURGE immediately after SETCLIENTID_CONFIRM <NULL>.
+
+The set of delegations known to the server and the client may be different <NULL>.  The reasons for this include:
+
+   o  A client may fail after making a request that resulted in delegation but before it received the results and committed them to the client's stable storage <NULL>.
+
+   o  A client may fail after deleting its indication that a delegation exists but before the delegation return is fully processed by the server <NULL>.
+
+   o  In the case in which the server and the client restart, the server may have limited persistent recording of delegations to a subset of those in existence <NULL>.
+
+   o  A client may have only persistently recorded information about a subset of delegations <NULL>.
+
+The server MAY support DELEGPURGE, but its support or non-support should match that of CLAIM_DELEGATE_PREV:
+
+   o  A server may support both DELEGPURGE and CLAIM_DELEGATE_PREV <NULL>. 
+
+   o  A server may support neither DELEGPURGE nor CLAIM_DELEGATE_PREV <NULL>.
+
+This fact allows a client starting up to determine if the server is prepared to support persistent storage of delegation information and thus whether it may use write-back caching to local persistent storage, relying on CLAIM_DELEGATE_PREV recovery to allow such changed data to be flushed safely to the server in the event of client restart <NULL>.
+
+
+
+
+
+
+
+
+
+
+

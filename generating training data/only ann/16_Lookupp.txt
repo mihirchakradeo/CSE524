@@ -1,0 +1,31 @@
+16.14.  Operation 16: LOOKUPP - Look Up Parent Directory
+
+16.14.1.  SYNOPSIS
+
+     (cfh) -> (cfh)
+
+16.14.2.  ARGUMENT
+
+     /* CURRENT_FH: object */
+     void;
+
+16.14.3.  RESULT
+
+   struct LOOKUPP4res {
+           /* CURRENT_FH: directory */
+           nfsstat4        status;
+   };
+
+16.14.4.  DESCRIPTION
+
+The current filehandle is assumed to refer to a regular directory or a named attribute directory <NULL>.  LOOKUPP assigns the filehandle for its parent directory to be the current filehandle <NULL>.  If there is no parent directory, an NFS4ERR_NOENT error must be returned <NULL>.  Therefore, NFS4ERR_NOENT will be returned by the server when the current filehandle is at the root or top of the server's file tree <NULL>.
+
+16.14.5.  IMPLEMENTATION
+
+As for LOOKUP, LOOKUPP will also cross mount points <NULL>.
+
+If the current filehandle is not a directory or named attribute directory, the error NFS4ERR_NOTDIR is returned <NULL>.
+
+If the current filehandle is a named attribute directory that is associated with a file system object via OPENATTR (i.e., not a subdirectory of a named attribute directory), LOOKUPP SHOULD return the filehandle of the associated file system object <NULL>.
+
+

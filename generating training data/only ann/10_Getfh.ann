@@ -1,0 +1,29 @@
+T1	filehandle 422 446	current filehandle value
+T2	Assign 410 417	returns
+E1	Assign:T2 Variable-Arg:T3 Value-Arg:T1
+T3	Variable 447 453	<NULL>
+T4	Value 459 466	success
+T5	Variable 509 515	<NULL>
+T6	Equal 456 458	On
+E2	Equal:T6 Variable-Arg:T5 Value-Arg:T4
+T7	Pre 456 466	On success
+T8	filehandle 472 490	current filehandle
+T10	Post 468 508	the current filehandle retains its value
+R1	Transition Arg1:T7 Arg2:T10	
+T11	cfh 570 588	current filehandle
+T12	filehandle 645 659	new filehandle
+T9	cfh 499 508	its value
+T13	Equal 491 498	retains
+E3	Equal:T13 Variable-Arg:T8 Value-Arg:T9
+T14	filehandle 757 767	filehandle
+T15	Extrinsic-Post 681 767	For instance, if a client needs to look up a directory entry and obtain its filehandle
+T16	Extrinsic-Pre 769 813;815 844;845 864;865 870	then the following request is needed <NULL>. PUTFH  (directory filehandle) LOOKUP (entry name) GETFH
+T17	cfh 823 843	directory filehandle
+A1	Server E1
+T18	OperationName 595 601	LOOKUP
+T19	OperationName 605 611	CREATE
+T20	Comparison 815 820	PUTFH
+E4	Comparison:T20 
+T21	OperationName 845 851	LOOKUP
+T22	OperationName 865 870	GETFH
+R2	Transition Arg1:T16 Arg2:T15	

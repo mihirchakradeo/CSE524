@@ -1,0 +1,57 @@
+T1	cfh 591 609	current filehandle
+T2	Extrinsic-Pre 619 728	The client sets a bit in the bitmap argument for each attribute value that it would like the server to return
+T3	attrbits 760 776	attribute bitmap
+T4	attrvals 869 885	attribute values
+T5	Post 933 1007	The server MUST return a value for each attribute that the client requests
+T6	Pre 1008 1051	if the attribute is supported by the server
+R1	Transition Arg1:T6 Arg2:T5	
+T7	attrbits 1015 1024	attribute
+T8	attrvals 958 963	value
+T9	attrbits 973 982	attribute
+T10	Pre 1061 1104	If the server does not support an attribute
+T11	attrbits 1095 1104	attribute
+T12	Pre 1108 1141	cannot approximate a useful value
+T13	attrvals 1136 1141	value
+T14	Post 1143 1242	then it MUST NOT return the attribute value and MUST NOT set the attribute bit in the result bitmap
+R2	Transition Arg1:T12 Arg2:T14	
+R3	Transition Arg1:T10 Arg2:T14	
+T16	attrbits 1208 1221	attribute bit
+T17	Variable 1243 1249	<NULL>
+T15	attrbits 1171 1186	attribute value
+T20	attrbits 1229 1242	result bitmap
+T22	Post 1252 1283	The server MUST return an error
+T23	Value 1278 1283	error
+T25	Variable 1354 1360	<NULL>
+T21	Pre 1284 1324	if it supports an attribute on the targe
+T26	Pre 1326 1353	but cannot obtain its value
+T27	Post 1326 1353	but cannot obtain its value
+R4	Transition Arg1:T21 Arg2:T27	
+R5	Transition Arg1:T26 Arg2:T22	
+T28	attrvals 1348 1353	value
+T29	Comparison 1330 1343	cannot obtain
+E4	Comparison:T29 Value-Arg:T28 Variable-Arg:T30
+T30	attrbits 1302 1311	attribute
+T31	attrvals 1380 1396	attribute values
+T32	Post 1377 1413	no attribute values will be returned
+R6	Transition Arg1:T26 Arg2:T32	
+T33	Pre 1800 1810	On success
+T34	Post 1812 1852	the current filehandle retains its value
+R7	Transition Arg1:T33 Arg2:T34	
+T35	Value 1803 1810	success
+T36	Variable 1853 1859	<NULL>
+T37	Equal 1800 1802	On
+E5	Equal:T37 Variable-Arg:T36 Value-Arg:T35
+T38	cfh 1816 1834	current filehandle
+T39	cfh 1847 1852	value
+T40	Assign 1835 1842	retains
+E6	Assign:T40 Variable-Arg:T38 Value-Arg:T39
+T18	Assign 1151 1166	MUST NOT return
+E1	Assign:T18 Value-Arg:T15 Variable-Arg:T17
+A1	Negation E1
+A4	Server E1
+T24	Assign 1256 1274	server MUST return
+E3	Assign:T24 Value-Arg:T23 Variable-Arg:T25
+A3	Server E3
+T19	Assign 1191 1203	MUST NOT set
+E2	Assign:T19 Variable-Arg2:T20 Value-Arg:T16
+A2	Negation E2

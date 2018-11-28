@@ -1,0 +1,104 @@
+T1	Extrinsic-Pre 715 811	The existing file and the target directory must reside within the same file system on the server
+T2	Pre 821 831	On success
+T3	Post 833 896	the current filehandle will continue to be the target directory
+T4	cfh 837 855	current filehandle
+T5	Variable 880 896	target directory
+T6	Equal 856 879	will continue to be the
+E1	Equal:T6 Variable-Arg:T5 Value-Arg:T4
+R1	Transition Arg1:T2 Arg2:T3	
+T7	Post 981 1017	the server must return NFS4ERR_EXIST
+T8	Extrinsic-Pre 906 979	If an object exists in the target directory with the same name as newname
+R2	Transition Arg1:T8 Arg2:T7	
+T9	newname 972 979	newname
+T10	Variable 912 918	object
+T11	Comparison 919 968	exists in the target directory with the same name
+E2	Comparison:T11 Value-Arg:T9 Variable-Arg:T10
+T12	newname 561 568	newname
+T13	sfh 601 617	saved filehandle
+T14	cfh 687 705	current filehandle
+T15	Extrinsic-Post 539 705	creates an additional newname for the file represented by the saved filehandle, as set by the SAVEFH operation, in the directory represented by the current filehandle
+T16	Extrinsic-Pre 520 538	The LINK operation
+R3	Transition Arg1:T16 Arg2:T15	
+T17	cinfo 1100 1105	cinfo
+T18	Pre 1300 1335	If newname has a length of 0 (zero)
+T19	Pre 1337 1385	or if newname does not obey the UTF-8 definition
+T20	Post 1387 1427	the error NFS4ERR_INVAL will be returned
+T21	Variable 1428 1434	<NULL>
+T22	Assign 1411 1427	will be returned
+E3	Assign:T22 Variable-Arg:T21 Value-Arg:T20
+T23	newname 1343 1350	newname
+T24	Comparison 1351 1364	does not obey
+E4	Comparison:T24 Variable-Arg:T23 Value-Arg:T25
+T25	Value 1369 1385	UTF-8 definition
+R4	Transition Arg1:T19 Arg2:T20	
+R5	Transition Arg1:T18 Arg2:T20	
+T29	Extrinsic-Pre 1564 1593	When a link is made to a file
+T30	Extrinsic-Post 1595 1716	the attributes for the file should have a value for numlinks that is one greater than the value before the LINK operation
+R6	Transition Arg1:T29 Arg2:T30	
+T31	newname 2194 2201	newname
+T32	cfh 2290 2308	current filehandle
+T33	sfh 2381 2397	saved filehandle
+T34	sfh 2503 2519	saved filehandle
+T35	cfh 2557 2575	current filehandle
+T36	cfh 2689 2707	current filehandle
+T37	sfh 2780 2796	saved filehandle
+T38	Extrinsic-Pre 2281 2443	When the current filehandle designates a named attribute directory and the object to be linked (the saved filehandle) is not a named attribute for the same object
+T39	Extrinsic-Post 2445 2484	the error NFS4ERR_XDEV MUST be returned
+R7	Transition Arg1:T38 Arg2:T39	
+T40	Assign 2476 2484	returned
+E6	Assign:T40 Variable-Arg:T41 Value-Arg:T42
+T41	Variable 2485 2491	<NULL>
+T42	Value 2455 2472	NFS4ERR_XDEV MUST
+T44	Extrinsic-Post 2626 2670	the error NFS4ERR_XDEV MUST also be returned
+T45	Value 2636 2648	NFS4ERR_XDEV
+T46	Assign 2662 2670	returned
+E7	Assign:T46 Variable-Arg:T47 Value-Arg:T45
+T47	Variable 2671 2677	<NULL>
+T43	Extrinsic-Pre 2494 2548	When the saved filehandle designates a named attribute
+T48	Extrinsic-Post 2549 2624	and the current filehandle is not the appropriate named attribute directory
+R8	Transition Arg1:T43 Arg2:T48	
+T49	Extrinsic-Pre 2549 2624	and the current filehandle is not the appropriate named attribute directory
+R9	Transition Arg1:T49 Arg2:T44	
+T50	Extrinsic-Pre 2680 2746	When the current filehandle designates a named attribute directory
+T51	Extrinsic-Post 2747 2840	and the object to be linked (the saved filehandle) is a named attribute within that directory
+R10	Transition Arg1:T50 Arg2:T51	
+T52	Extrinsic-Pre 2747 2840	and the object to be linked (the saved filehandle) is a named attribute within that directory
+T53	Extrinsic-Post 2842 2889	the server MAY return the error NFS4ERR_NOTSUPP
+R11	Transition Arg1:T52 Arg2:T53	
+T54	Value 2874 2889	NFS4ERR_NOTSUPP
+T55	Variable 2890 2896	<NULL>
+T56	Assign 2842 2863	the server MAY return
+E8	Assign:T56 Value-Arg:T54 Variable-Arg:T55
+T57	Pre 2899 2989	In the case that newname is already linked to the file represented by the saved filehandle
+T58	Post 2991 3027	the server will return NFS4ERR_EXIST
+T59	Value 3014 3027	NFS4ERR_EXIST
+T60	Variable 3028 3034	<NULL>
+T61	Assign 2995 3013	server will return
+E9	Assign:T61 Variable-Arg:T60 Value-Arg:T59
+T62	sfh 2973 2989	saved filehandle
+T63	newname 2916 2923	newname
+R12	Transition Arg1:T57 Arg2:T58	
+T64	Comparison 2924 2941	is already linked
+E10	Comparison:T64 Variable-Arg:T63 Value-Arg:T62
+T65	Value 1004 1017	NFS4ERR_EXIST
+T66	Variable 1018 1024	<NULL>
+T67	Assign 992 1003	must return
+E11	Assign:T67 Value-Arg:T65 Variable-Arg:T66
+T27	Value 1327 1334	0 (zero
+T28	newname 1303 1310	newname
+A1	Length T28
+T68	Equal 1311 1314	has
+E5	Equal:T68 Variable-Arg:T28 Value-Arg:T27
+T26	OperationName 524 528	LINK
+T69	OperationName 633 639	SAVEFH
+T70	Variable 658 704	directory represented by the current filehandl
+T71	Equal 821 823	On
+E12	Equal:T71 Value-Arg:T72 Variable-Arg:T73
+T72	Value 824 831	success
+T73	Variable 897 903	<NULL>
+A2	Server E11
+A3	Server E3
+T74	OperationName 1702 1706	LINK
+A4	Server E6
+A5	Server E8
+A6	Server E9

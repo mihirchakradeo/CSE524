@@ -1,0 +1,41 @@
+Operation 4: CLOSE - Close File
+
+
+16.2.1. SYNOPSIS
+
+
+     (cfh), seqid, open_stateid -> open_stateid
+
+16.2.2. ARGUMENT
+
+
+   struct CLOSE4args {
+           /* CURRENT_FH: object */
+           seqid4          seqid;
+           stateid4        open_stateid;
+   };
+
+16.2.3. RESULT
+
+
+   union CLOSE4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            stateid4       open_stateid;
+    default:
+            void;
+   };
+
+16.2.4. DESCRIPTION
+
+
+The CLOSE operation releases share reservations for the regular or named attribute file as specified by the current filehandle <NULL>.  The share reservations and other state information released at the server as a result of this CLOSE are only associated with the supplied stateid <NULL>.  The sequence id provides for the correct ordering <NULL>.  State associated with other OPENs is not affected <NULL>.
+
+If byte-range locks are held, the client SHOULD release all locks before issuing a CLOSE <NULL>.  The server MAY free all outstanding locks on CLOSE, but some servers may not support the CLOSE of a file that still has byte-range locks held <NULL>.  The server MUST return failure if any locks would exist after the CLOSE <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.2.5. IMPLEMENTATION
+
+
+Even though CLOSE returns a stateid, this stateid is not useful to the client and should be treated as deprecated <NULL>.  CLOSE "shuts down" the state associated with all OPENs for the file by a single open-owner <NULL>.  As noted above, CLOSE will either release all file locking state or return an error <NULL>.  Therefore, the stateid returned by CLOSE is not useful for the operations that follow <NULL>. 
+

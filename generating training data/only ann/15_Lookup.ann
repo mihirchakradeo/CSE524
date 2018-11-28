@@ -1,0 +1,44 @@
+T1	OperationName 395 401	LOOKUP
+T2	cfh 469 487	current filehandle
+T3	OperationName 497 503	LOOKUP
+T4	Post 754 830	then an error will be returned, and the current filehandle will be unchanged
+T5	Pre 629 752	If the component cannot be evaluated because either it does not exist or the client does not have permission to evaluate it
+T6	component 636 645	component
+R1	Transition Arg1:T5 Arg2:T4	
+T7	Assign 776 784	returned
+E1	Assign:T7 Value-Arg:T8 Variable-Arg:T9
+T8	Value 762 767	error
+T9	Variable 831 837	<NULL>
+T10	cfh 794 812	current filehandle
+T11	Equal 821 830	unchanged
+E2	Equal:T11 Variable-Arg:T10 Value-Arg:T10
+T12	Pre 840 874	If the component is of zero length
+T13	Post 876 906	NFS4ERR_INVAL will be returned
+R2	Transition Arg1:T12 Arg2:T13	
+T14	component 847 856	component
+A1	Length T14
+T15	Value 863 874	zero length
+T16	Equal 858 862	s of
+E3	Equal:T16 Variable-Arg:T14 Value-Arg:T15
+T17	Value 876 889	NFS4ERR_INVAL
+T18	Assign 898 906	returned
+E4	Assign:T18 Variable-Arg:T19 Value-Arg:T17
+T19	Variable 907 913	<NULL>
+T20	Pre 2704 2777	If the current filehandle supplied is not a directory but a symbolic link
+T21	Post 2779 2819	NFS4ERR_SYMLINK is returned as the error
+R3	Transition Arg1:T20 Arg2:T21	
+T22	cfh 2711 2729	current filehandle
+T23	Value 2764 2777	symbolic link
+T24	Equal 2739 2741	is
+E5	Equal:T24 Value-Arg:T23 Variable-Arg:T22
+T25	Value 2779 2794	NFS4ERR_SYMLINK
+T26	Assign 2798 2819	returned as the error
+E6	Assign:T26 Variable-Arg:T27 Value-Arg:T25
+T27	Variable 2820 2826	<NULL>
+T28	Value 2879 2893	NFS4ERR_NOTDIR
+T29	Assign 2897 2905	returned
+E7	Assign:T29 Variable-Arg:T30 Value-Arg:T28
+T30	Variable 2906 2912	<NULL>
+T31	Pre 2829 2867	For all other non-directory file types
+T32	Post 2869 2905	the error NFS4ERR_NOTDIR is returned
+R4	Transition Arg1:T31 Arg2:T32	

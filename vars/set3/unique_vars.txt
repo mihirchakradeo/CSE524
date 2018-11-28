@@ -1,0 +1,14 @@
+cfh
+attrs
+attrset
+cinfo
+claim
+clientid
+fattr
+name
+openhow
+owner
+seqid
+share_access
+share_deny
+type

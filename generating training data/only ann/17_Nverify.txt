@@ -1,0 +1,40 @@
+16.15.  Operation 17: NVERIFY - Verify Difference in Attributes
+
+16.15.1.  SYNOPSIS
+
+     (cfh), fattr -> -
+
+16.15.2.  ARGUMENT
+
+   struct NVERIFY4args {
+           /* CURRENT_FH: object */
+           fattr4          obj_attributes;
+   };
+
+16.15.3.  RESULT
+
+   struct NVERIFY4res {
+           nfsstat4        status;
+   };
+
+16.15.4.  DESCRIPTION
+
+This operation is used to prefix a sequence of operations to be performed if one or more attributes have changed on some file system object <NULL>.  If all the attributes match, then the error NFS4ERR_SAME must be returned <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+
+16.15.5.  IMPLEMENTATION
+
+This operation is useful as a cache validation operator <NULL>.  If the object to which the attributes belong has changed, then the following operations may obtain new data associated with that object -- for instance, to check if a file has been changed and obtain new data if it has:
+
+PUTFH  (public)
+LOOKUP "foobar"
+NVERIFY attrbits attrs
+READ 0 32767
+
+In the case that a RECOMMENDED attribute is specified in the NVERIFY operation and the server does not support that attribute for the file system object, the error NFS4ERR_ATTRNOTSUPP is returned to the client <NULL>.
+
+When the attribute rdattr_error or any write-only attribute (e.g., time_modify_set) is specified, the error NFS4ERR_INVAL is returned to  the client <NULL>.
+
+

@@ -1,0 +1,42 @@
+T1	Pre 496 523	If all the attributes match
+T2	Post 525 569	then the error NFS4ERR_SAME must be returned
+T3	fattr 507 517	attributes
+T4	Equal 518 523	match
+E1	Equal:T4 Variable-Arg:T3 Value-Arg:T5
+T5	Value 570 576	<NULL>
+T6	Value 540 552	NFS4ERR_SAME
+T7	Assign 561 569	returned
+E2	Assign:T7 Variable-Arg:T5 Value-Arg:T6
+T8	cfh 595 613	current filehandle
+T9	cfh 626 631	value
+T10	Equal 614 621	retains
+E3	Equal:T10 Value-Arg:T9 Variable-Arg:T8
+T11	Value 582 589	success
+T12	Equal 579 581	On
+E4	Equal:T12 Variable-Arg:T13 Value-Arg:T11
+T13	Variable 632 638	<NULL>
+T14	Pre 579 589	On success
+T15	Post 591 631	the current filehandle retains its value
+R1	Transition Arg1:T14 Arg2:T15	
+T16	Extrinsic-Pre 1023 1101	In the case that a RECOMMENDED attribute is specified in the NVERIFY operation
+T17	OperationName 1084 1091	NVERIFY
+T18	Extrinsic-Pre 1102 1175	and the server does not support that attribute for the file system object
+T19	Extrinsic-Post 1102 1175	and the server does not support that attribute for the file system object
+R2	Transition Arg1:T16 Arg2:T19	
+T20	Post 1177 1232	the error NFS4ERR_ATTRNOTSUPP is returned to the client
+T21	Value 1187 1206	NFS4ERR_ATTRNOTSUPP
+T22	Assign 1210 1218	returned
+E5	Assign:T22 Variable-Arg:T23 Value-Arg:T21
+T23	Variable 1233 1239	<NULL>
+R3	Transition Arg1:T18 Arg2:T20	
+T24	Comparison 1117 1133	does not support
+E6	Comparison:T24 Value-Arg:T25 Variable-Arg:T23
+A1	Negation E6
+T25	fattr 1139 1148	attribute
+T26	Extrinsic-Pre 1242 1338	When the attribute rdattr_error or any write-only attribute (e.g., time_modify_set) is specified
+T27	Post 1340 1390	the error NFS4ERR_INVAL is returned to  the client
+T29	Variable 1391 1397	<NULL>
+T28	Value 1350 1363	NFS4ERR_INVAL
+T30	Assign 1367 1375	returned
+E7	Assign:T30 Variable-Arg:T29 Value-Arg:T28
+R4	Transition Arg1:T26 Arg2:T27	

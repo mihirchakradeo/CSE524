@@ -1,0 +1,6 @@
+T1	cfh 400 418	current filehandle
+T2	stateid 423 430	stateid
+T3	OperationName 346 357	DELEGRETURN
+T4	Assign 358 365	returns
+T5	Variable 431 437	<NULL>
+E2	Assign:T4 

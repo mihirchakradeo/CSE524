@@ -1,0 +1,68 @@
+16.4.  Operation 6: CREATE - Create a Non-regular File Object
+
+16.4.1.  SYNOPSIS
+
+     (cfh), name, type, attrs -> (cfh), cinfo, attrset
+
+16.4.2.  ARGUMENT
+
+   union createtype4 switch (nfs_ftype4 type) {
+    case NF4LNK:
+            linktext4 linkdata;
+    case NF4BLK:
+    case NF4CHR:
+            specdata4 devdata;
+    case NF4SOCK:
+    case NF4FIFO:
+    case NF4DIR:
+            void;
+    default:
+            void;  /* server should return NFS4ERR_BADTYPE */
+   };
+
+   struct CREATE4args {
+           /* CURRENT_FH: directory for creation */
+           createtype4     objtype;
+           component4      objname;
+           fattr4          createattrs;
+   };
+
+16.4.3.  RESULT
+
+   struct CREATE4resok {
+           change_info4    cinfo;
+           bitmap4         attrset;        /* attributes set */
+   };
+
+   union CREATE4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            CREATE4resok resok4;
+    default:
+            void;
+   };
+
+
+16.4.4.  DESCRIPTION
+
+The CREATE operation creates a non-regular file object in a directory with a given name <NULL>.   The OPEN operation is used to create a regular file <NULL>. 
+
+The objname specifies the name for the new object <NULL>.   The objtype determines the type of object to be created: directory, symlink, etc <NULL>. 
+
+If an object of the same name already exists in the directory, the server will return the error NFS4ERR_EXIST <NULL>. 
+
+For the directory where the new file object was created, the server returns change_info4 information in cinfo <NULL>.   With the atomic field of the change_info4 struct, the server will indicate if the before and after change attributes were obtained atomically with respect to the file object creation <NULL>. 
+
+If the objname is of zero length, NFS4ERR_INVAL will be returned <NULL>.  The objname is also subject to the normal UTF-8, character support, and name checks <NULL>.   See Section 12 <NULL>. 7 for further discussion <NULL>. 
+
+The current filehandle is replaced by that of the new object <NULL>. 
+
+The createattrs field specifies the initial set of attributes for the object <NULL>.   The set of attributes may include any writable attribute valid for the object type <NULL>.   When the operation is successful, the server will return to the client an attribute mask signifying which attributes were successfully set for the object <NULL>. 
+
+If createattrs includes neither the owner attribute nor an ACL with an ACE for the owner, and if the server's file system both supports and requires an owner attribute (or an owner ACE), then the server MUST derive the owner (or the owner ACE) <NULL>.   This would typically be from the principal indicated in the RPC credentials of the call, butthe server's operating environment or file system semantics may dictate other methods of derivation <NULL>.   Similarly, if createattrs includes neither the group attribute nor a group ACE, and if the server's file system both supports and requires the notion of a group attribute (or group ACE), the server MUST derive the group attribute (or the corresponding owner ACE) for the file <NULL>.   This could be from the RPC's credentials, such as the group principal if the credentials include it (such as with AUTH_SYS), from the group identifier associated with the principal in the credentials (e <NULL>. g <NULL>. , POSIX systems have a user database [getpwnam] that has the group identifier for every user identifier), inherited from the directory the object is created in, or whatever else the server's operating environment or file system semantics dictate <NULL>.   This applies to the OPEN operation too <NULL>. 
+
+Conversely, it is possible the client will specify in createattrs an owner attribute, group attribute, or ACL that the principal indicated the RPC's credentials does not have permissions to create files for <NULL>.  The error to be returned in this instance is NFS4ERR_PERM <NULL>.   This applies to the OPEN operation too <NULL>. 
+
+16.4.5.  IMPLEMENTATION
+
+If the client desires to set attribute values after the create, a SETATTR operation can be added to the COMPOUND request so that the appropriate attributes will be set <NULL>. 
+

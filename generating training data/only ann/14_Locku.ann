@@ -1,0 +1,54 @@
+T1	Post 975 1034	The NFS4ERR_INVAL and NFS4ERR_BAD_RANGE errors are returned
+T2	Extrinsic-Pre 1035 1076	under the same circumstances as  for LOCK
+R1	Transition Arg1:T2 Arg2:T1	
+T3	Value 997 1014	NFS4ERR_BAD_RANGE
+T4	Value 979 992	NFS4ERR_INVAL
+E1	Assign:T33 Variable-Arg:T6 Value-Arg:T3
+T6	Variable 1077 1083	<NULL>
+E2	Assign:T33 Variable-Arg:T6 Value-Arg:T4
+T7	Pre 1086 1096	On success
+T8	Post 1098 1138	the current filehandle retains its value
+T9	Value 1089 1096	success
+T10	Equal 1086 1088	On
+E3	Equal:T10 Variable-Arg:T11 Value-Arg:T9
+T11	Variable 1139 1145	<NULL>
+T12	cfh 1102 1120	current filehandle
+T13	Equal 1121 1128	retains
+E4	Equal:T13 Variable-Arg:T12 Value-Arg:T14
+T14	cfh 1133 1138	value
+R2	Transition Arg1:T7 Arg2:T8	
+T15	Post 1273 1323	the server may return the error NFS4ERR_LOCK_RANGE
+T16	Pre 1175 1271	If the area to be unlocked does not correspond exactly to a lock actually held by the lock-owner
+T17	Value 1305 1323	NFS4ERR_LOCK_RANGE
+T18	Variable 1324 1330	<NULL>
+T19	Assign 1289 1294	eturn
+E5	Assign:T19 Value-Arg:T17 Variable-Arg:T18
+R3	Transition Arg1:T16 Arg2:T15	
+T20	Extrinsic-Pre 1367 1389	the area is not locked
+T21	Extrinsic-Pre 1395 1437	the area is a sub-range of the area locked
+T22	Extrinsic-Pre 1443 1496	it overlaps the area locked without matching exactly,
+T23	Extrinsic-Pre 1504 1569	the area specified includes multiple locks held by the lock-owner
+T24	Post 1602 1812	allowed by POSIX locking [fcntl] semantics, a client receiving this error should, if it desires support for such operations, simulate the operation using LOCKU on ranges corresponding to locks it actually holds
+T25	Extrinsic-Post 1814 1886	possibly followed by LOCK requests for the sub-ranges not being unlocked
+T26	Extrinsic-Pre 1602 1812	allowed by POSIX locking [fcntl] semantics, a client receiving this error should, if it desires support for such operations, simulate the operation using LOCKU on ranges corresponding to locks it actually holds
+R4	Transition Arg1:T26 Arg2:T25	
+R5	Transition Arg1:T20 Arg2:T24	
+R6	Transition Arg1:T21 Arg2:T24	
+R7	Transition Arg1:T22 Arg2:T24	
+R8	Transition Arg1:T23 Arg2:T24	
+T27	Extrinsic-Post 1951 2018	it may choose (see Section 16.10.5) to handle LOCK requests locally
+T28	Pre 1896 1949	When a client holds an OPEN_DELEGATE_WRITE delegation
+T29	Value 1919 1938	OPEN_DELEGATE_WRITE
+T30	Comparison 1910 1915	holds
+E6	Comparison:T30 Value-Arg:T29 Variable-Arg:T31
+T31	Variable 1903 1909	client
+R9	Transition Arg1:T28 Arg2:T27	
+T32	Post 2028 2092	In such a case, LOCKU requests will similarly be handled locally
+R10	Transition Arg1:T28 Arg2:T32	
+T33	Assign 1026 1034	returned
+T5	OperationName 1072 1076	LOCK
+A1	Server E5
+T34	OperationName 1756 1761	LOCKU
+T35	OperationName 1835 1839	LOCK
+T36	OperationName 1997 2001	LOCK
+T37	OperationName 2044 2049	LOCKU
