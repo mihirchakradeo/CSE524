@@ -50,6 +50,7 @@ def get_unique_vars():
 	unique_vars = set()
 
 	for file in glob.glob("operations/set3/*.txt"):
+	# for file in glob.glob("RFCs/*.txt"):
 		# print file
 		sets = build_dictionaries(file)
 		unique_vars = unique_vars.union(sets)
@@ -57,13 +58,14 @@ def get_unique_vars():
 	# print unique_vars
 	unique_vars = list(unique_vars)
 	unique_vars.sort()
-	with open('vars/set3/unique_vars.txt', 'w') as f:
+	with open('vars/all_vars.txt', 'w') as f:
 
 		for var in unique_vars:
 			s = var+"\n"
 			f.write(s)
 
-
 if __name__ == '__main__':
 	# build_dictionaries(sys.argv[1])
-	get_unique_vars()
+	
+	get_unique_vars() # use this
+	# collect_all_variables()
