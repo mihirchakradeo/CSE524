@@ -1,0 +1,50 @@
+16.26.  Operation 28: REMOVE - Remove File System Object
+
+16.26.1.  SYNOPSIS
+
+     (cfh), filename -> change_info
+
+16.26.2.  ARGUMENT
+
+   struct REMOVE4args {
+           /* CURRENT_FH: directory */
+           component4      target;
+   };
+
+16.26.3.  RESULT
+
+   struct REMOVE4resok {
+           change_info4    cinfo;
+   };
+
+   union REMOVE4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            REMOVE4resok   resok4;
+    default:
+            void;
+   };
+
+16.26.4.  DESCRIPTION
+
+The REMOVE operation removes (deletes) a directory entry named by filename from the directory corresponding to the current filehandle <NULL>. If the entry in the directory was the last reference to the corresponding file system object, the object may be destroyed <NULL>.
+
+For the directory where the filename was removed, the server returns change_info4 information in cinfo <NULL>.  With the atomic field of the change_info4 struct, the server will indicate if the before and after change attributes were obtained atomically with respect to the removal <NULL>.
+
+If the target is of zero length, NFS4ERR_INVAL will be returned <NULL>.  The target is also subject to the normal UTF-8, character support, and name checks <NULL>.  See Section 12.7 for further discussion <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+
+16.26.5.  IMPLEMENTATION
+
+NFSv3 required a different operator -- RMDIR -- for directory removal, and REMOVE for non-directory removal <NULL>.  This allowed clients to skip checking the file type when being passed a non-directory delete system call (e.g., unlink() [unlink] in POSIX) to remove a directory, as well as the converse (e.g., a rmdir() on a non-directory), because they knew the server would check the file type <NULL>.  NFSv4 REMOVE can be used to delete any directory entry, independent of its file type <NULL>.  The implementer of an NFSv4 client's entry points from the unlink() and rmdir() system calls should first check the file type against the types the system call is allowed to remove before issuing a REMOVE <NULL>.  Alternatively, the implementer can produce a COMPOUND call that includes a LOOKUP/VERIFY sequence to verify the file type before a REMOVE operation in the same COMPOUND call <NULL>.
+
+The concept of last reference is server specific <NULL>.  However, if the numlinks field in the previous attributes of the object had the value 1, the client should not rely on referring to the object via a filehandle <NULL>.  Likewise, the client should not rely on the resources (disk space, directory entry, and so on) formerly associated with the object becoming immediately available <NULL>.  Thus, if a client needs to be able to continue to access a file after using REMOVE to remove it, the client should take steps to make sure that the file will still be accessible <NULL>.  The usual mechanism used is to RENAME the file from its old name to a new hidden name <NULL>.
+
+If the server finds that the file is still open when the REMOVE arrives:
+
+o  The server SHOULD NOT delete the file's directory entry if the file was opened with OPEN4_SHARE_DENY_WRITE or OPEN4_SHARE_DENY_BOTH <NULL>.
+
+o  If the file was not opened with OPEN4_SHARE_DENY_WRITE or OPEN4_SHARE_DENY_BOTH, the server SHOULD delete the file's directory entry <NULL>.  However, until the last CLOSE of the file, the server MAY continue to allow access to the file via its filehandle <NULL>.
+
+

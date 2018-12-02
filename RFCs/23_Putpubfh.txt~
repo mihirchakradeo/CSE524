@@ -1,0 +1,35 @@
+16.21.  Operation 23: PUTPUBFH - Set Public Filehandle
+
+16.21.1.  SYNOPSIS
+
+     - -> (cfh)
+
+16.21.2.  ARGUMENT
+
+     void;
+
+16.21.3.  RESULT
+
+   struct PUTPUBFH4res {
+           /* CURRENT_FH: public fh */
+           nfsstat4        status;
+   };
+
+16.21.4.  DESCRIPTION
+
+PUTPUBFH replaces the current filehandle with the filehandle that represents the public filehandle of the server's namespace <NULL>.  This filehandle may be different from the root filehandle, which may be associated with some other directory on the server <NULL>.
+
+The public filehandle concept was introduced in [RFC2054], [RFC2055], and [RFC2224] <NULL>.  The intent for NFSv4 is that the public filehandle (represented by the PUTPUBFH operation) be used as a method of providing compatibility with the WebNFS server of NFSv2 and NFSv3 <NULL>.
+
+The public filehandle and the root filehandle (represented by the PUTROOTFH operation) should be equivalent <NULL>.  If the public and root filehandles are not equivalent, then the public filehandle MUST be a descendant of the root filehandle <NULL>.
+
+
+16.21.5.  IMPLEMENTATION
+
+PUTPUBFH is used as the first operator in an NFS request to set the context for operations that follow it <NULL>.
+
+With the NFSv2 and NFSv3 public filehandle, the client is able to specify whether the pathname provided in the LOOKUP should be evaluated as either an absolute path relative to the server's root or relative to the public filehandle <NULL>.  [RFC2224] contains further discussion of the functionality <NULL>.  With NFSv4, that type of specification is not directly available in the LOOKUP operation <NULL>.  The reason for this is because the component separators needed to specify absolute versus relative are not allowed in NFSv4 <NULL>.  Therefore, the client is responsible for constructing its request such that either PUTROOTFH or PUTPUBFH is used to signify absolute or relative evaluation of an NFS URL, respectively <NULL>.
+
+Note that there are warnings mentioned in [RFC2224] with respect to the use of absolute evaluation and the restrictions the server may place on that evaluation with respect to how much of its namespace has been made available <NULL>.  These same warnings apply to NFSv4 <NULL>.  It is likely, therefore, that because of server implementation details an NFSv3 absolute public filehandle lookup may behave differently than an NFSv4 absolute resolution <NULL>.
+
+There is a form of security negotiation as described in [RFC2755] that uses the public filehandle as a method of employing the Simple and Protected GSS-API Negotiation Mechanism (SNEGO) [RFC4178] <NULL>.  This method is not available with NFSv4, as filehandles are not overloaded with special meaning and therefore do not provide the same framework as NFSv2 and NFSv3 <NULL>.  Clients should therefore use the security negotiation mechanisms described in this RFC <NULL>.

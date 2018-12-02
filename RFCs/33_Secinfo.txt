@@ -1,0 +1,80 @@
+16.31.  Operation 33: SECINFO - Obtain Available Security
+
+16.31.1.  SYNOPSIS
+
+     (cfh), name -> { secinfo }
+
+16.31.2.  ARGUMENT
+
+   struct SECINFO4args {
+           /* CURRENT_FH: directory */
+           component4      name;
+   };
+
+16.31.3.  RESULT
+
+   /*
+    * From RFC 2203
+    */
+   enum rpc_gss_svc_t {
+           RPC_GSS_SVC_NONE        = 1,
+           RPC_GSS_SVC_INTEGRITY   = 2,
+           RPC_GSS_SVC_PRIVACY     = 3
+   };
+
+   struct rpcsec_gss_info {
+           sec_oid4        oid;
+           qop4            qop;
+           rpc_gss_svc_t   service;
+   };
+
+   /* RPCSEC_GSS has a value of '6'.  See RFC 2203 */
+   union secinfo4 switch (uint32_t flavor) {
+    case RPCSEC_GSS:
+            rpcsec_gss_info        flavor_info;
+    default:
+            void;
+   };
+
+   typedef secinfo4 SECINFO4resok<>;
+
+   union SECINFO4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            SECINFO4resok resok4;
+    default:
+            void;
+   };
+
+
+16.31.4.  DESCRIPTION
+
+The SECINFO operation is used by the client to obtain a list of valid RPC authentication flavors for a specific directory filehandle, filename pair <NULL>.  SECINFO should apply the same access methodology used for LOOKUP when evaluating the name <NULL>.  Therefore, if the requester does not have the appropriate access to perform a LOOKUP for the name, then SECINFO must behave the same way and return NFS4ERR_ACCESS <NULL>.
+
+The result will contain an array that represents the security mechanisms available, with an order corresponding to the server's preferences, the most preferred being first in the array <NULL>.  The client is free to pick whatever security mechanism it both desires and supports, or to pick -- in the server's preference order -- the first one it supports <NULL>.  The array entries are represented by the secinfo4 structure <NULL>.  The field 'flavor' will contain a value of AUTH_NONE, AUTH_SYS (as defined in [RFC5531]), or RPCSEC_GSS (as defined in [RFC2203]) <NULL>.
+
+For the flavors AUTH_NONE and AUTH_SYS, no additional security information is returned <NULL>.  For a return value of RPCSEC_GSS, a security triple is returned that contains the mechanism object id (as defined in [RFC2743]), the quality of protection (as defined in [RFC2743]), and the service type (as defined in [RFC2203]) <NULL>.  It is possible for SECINFO to return multiple entries with flavor equal to RPCSEC_GSS, with different security triple values <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+If the name has a length of 0 (zero), or if the name does not obey the UTF-8 definition, the error NFS4ERR_INVAL will be returned <NULL>.
+
+16.31.5.  IMPLEMENTATION
+
+The SECINFO operation is expected to be used by the NFS client when the error value of NFS4ERR_WRONGSEC is returned from another NFS operation <NULL>.  This signifies to the client that the server's security policy is different from what the client is currently using <NULL>.  At this point, the client is expected to obtain a list of possible security flavors and choose what best suits its policies <NULL>.
+
+As mentioned, the server's security policies will determine when a client request receives NFS4ERR_WRONGSEC <NULL>.  The operations that may receive this error are LINK, LOOKUP, LOOKUPP, OPEN, PUTFH, PUTPUBFH, PUTROOTFH, RENAME, RESTOREFH, and, indirectly, READDIR <NULL>.  LINK and RENAME will only receive this error if the security used for the operation is inappropriate for the saved filehandle <NULL>.  With the exception of READDIR, these operations represent the point at which the client can instantiate a filehandle into the current filehandle at the server <NULL>.  The filehandle is either provided by the client (PUTFH, PUTPUBFH, PUTROOTFH) or generated as a result of a name-to-filehandle translation (LOOKUP and OPEN) <NULL>.  RESTOREFH is different because the filehandle is a result of a previous SAVEFH <NULL>.  Even though the filehandle, for RESTOREFH, might have previously passed the server's inspection for a security match, the server will check it again on RESTOREFH to ensure that the security policy has not changed <NULL>.
+
+If the client wants to resolve an error return of NFS4ERR_WRONGSEC, the following will occur:
+
+o  For LOOKUP and OPEN, the client will use SECINFO with the same current filehandle and name as provided in the original LOOKUP or OPEN to enumerate the available security triples <NULL>.
+
+o  For LINK, PUTFH, RENAME, and RESTOREFH, the client will use SECINFO and provide the parent directory filehandle and the object name that corresponds to the filehandle originally provided by the PUTFH or RESTOREFH, or, for LINK and RENAME, the SAVEFH <NULL>.
+
+o  For LOOKUPP, PUTROOTFH, and PUTPUBFH, the client will be unable to use the SECINFO operation since SECINFO requires a current filehandle and none exist for these three operations <NULL>.  Therefore, the client must iterate through the security triples available at the client and re-attempt the PUTROOTFH or PUTPUBFH operation <NULL>.  In the unfortunate event that none of the MANDATORY security triples are supported by the client and server, the client SHOULD try using others that support integrity <NULL>.  Failing that, the client can try using AUTH_NONE, but because such forms lack integrity checks, this puts the client at risk <NULL>.  Nonetheless, the server SHOULD allow the client to use whatever security form the client requests and the server supports, since the risks of doing so are on the client <NULL>.
+
+The READDIR operation will not directly return the NFS4ERR_WRONGSEC error <NULL>.  However, if the READDIR request included a request for attributes, it is possible that the READDIR request's security triple does not match that of a directory entry <NULL>.  If this is the case and the client has requested the rdattr_error attribute, the server will return the NFS4ERR_WRONGSEC error in rdattr_error for the entry <NULL>.
+
+Note that a server MAY use the AUTH_NONE flavor to signify that the client is allowed to attempt to use authentication flavors that are not explicitly listed in the SECINFO results <NULL>.  Instead of using a listed flavor, the client might then, for instance, opt to use an otherwise unlisted RPCSEC_GSS mechanism instead of AUTH_NONE <NULL>.  It may wish to do so in order to meet an application requirement for data integrity or privacy <NULL>.  In choosing to use an unlisted flavor, the client SHOULD always be prepared to handle a failure by falling back to using AUTH_NONE or another listed flavor <NULL>.  It cannot assume that identity mapping is supported and should be prepared for the fact that its identity is squashed <NULL>.
+
+See Section 19 for a discussion on the recommendations for security flavors used by SECINFO <NULL>.
+

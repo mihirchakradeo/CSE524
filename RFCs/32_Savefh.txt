@@ -1,0 +1,40 @@
+16.30.  Operation 32: SAVEFH - Save Current Filehandle
+
+16.30.1.  SYNOPSIS
+
+     (cfh) -> (sfh)
+
+16.30.2.  ARGUMENT
+
+     /* CURRENT_FH: */
+     void;
+
+16.30.3.  RESULT
+
+   struct SAVEFH4res {
+           /* SAVED_FH: value of current fh */
+           nfsstat4        status;
+   };
+
+16.30.4.  DESCRIPTION
+
+Save the current filehandle <NULL>.  If a previous filehandle was saved, then it is no longer accessible <NULL>.  The saved filehandle can be restored as the current filehandle with the RESTOREFH operator <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.30.5.  IMPLEMENTATION
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
