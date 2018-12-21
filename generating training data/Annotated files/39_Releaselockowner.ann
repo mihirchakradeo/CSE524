@@ -1,0 +1,12 @@
+T1	Pre 595 662	If file locks associated with the lock_owner are held at the server
+T2	Post 664 752	the error NFS4ERR_LOCKS_HELD will be returned and no further action will be taken <NULL>
+R1	Transition Arg1:T1 Arg2:T2	
+T3	lock-owner 629 639	lock_owner
+T4	Comparison 640 648	are held
+E1	Comparison:T4 Variable-Arg:T3 Value-Arg:T5
+T5	Value 649 663	at the server,
+T6	Value 674 692	NFS4ERR_LOCKS_HELD
+T7	Variable 746 752	<NULL>
+T8	Assign 701 709	returned
+E2	Assign:T8 Value-Arg:T6 Variable-Arg:T7
+T9	OperationName 922 939	RELEASE_LOCKOWNER

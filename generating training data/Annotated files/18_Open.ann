@@ -1,0 +1,329 @@
+T1	OperationName 6435 6439	OPEN
+T2	Post 6841 6893	OPEN will then create or open a named attribute file
+T3	Pre 6783 6839	If the current filehandle is a named attribute directory
+T4	cfh 6790 6808	current filehandle
+T5	Variable 6814 6839	named attribute directory
+T6	Equal 6809 6811	is
+E1	Equal:T6 Variable-Arg:T5 Value-Arg:T4
+R1	Transition Arg1:T3 Arg2:T2	
+T7	OperationName 6841 6845	OPEN
+T8	Value 6873 6893	named attribute file
+T9	Post 7069 7097	he server will return EINVAL
+T10	Value 7091 7097	EINVAL
+T11	Assign 7084 7090	return
+E2	Assign:T11 Variable-Arg:T12 Value-Arg:T10
+A1	Server E2
+T12	Variable 7098 7104	<NULL>
+T13	Pre 6977 7008	If the createmode is EXCLUSIVE4
+T14	openhow 6984 6994	createmode
+T15	Value 6998 7008	EXCLUSIVE4
+T16	Equal 6995 6997	is
+E3	Equal:T16 Value-Arg:T15 Variable-Arg:T14
+T17	Extrinsic-Post 7009 7066	and the current filehandle is a named attribute directory
+T18	Extrinsic-Pre 7009 7066	and the current filehandle is a named attribute directory
+R2	Transition Arg1:T13 Arg2:T17	
+R3	Transition Arg1:T18 Arg2:T9	
+T19	cfh 7017 7035	current filehandle
+T20	Value 7041 7066	named attribute directory
+T21	Equal 7036 7040	is a
+E4	Equal:T21 Value-Arg:T20 Variable-Arg:T19
+T23	openhow 7107 7117	UNCHECKED4
+T22	Pre 7107 7128	UNCHECKED4 means that
+T24	Equal 7118 7123	means
+E5	Equal:T24 Variable-Arg:T23 Value-Arg:T25
+T25	Value 7107 7117	UNCHECKED4
+T26	Pre 7156 7264	if a file of that name does not exist and encountering an existing regular file of that name is not an error
+T27	Post 7129 7155	the file should be created
+T28	Post 7156 7264	if a file of that name does not exist and encountering an existing regular file of that name is not an error
+R4	Transition Arg1:T22 Arg2:T28	
+R5	Transition Arg1:T26 Arg2:T27	
+T29	Pre 7463 7516	When an UNCHECKED4 create encounters an existing file
+T30	openhow 7471 7481	UNCHECKED4
+T31	Value 7503 7516	existing file
+T32	Comparison 7489 7499	encounters
+E6	Comparison:T32 Value-Arg:T31 Variable-Arg:T30
+T33	Post 7518 7570	the attributes specified by createattrs are not used
+R6	Transition Arg1:T29 Arg2:T33	
+T34	Pre 7572 7616	except that when a size of zero is specified
+T35	Post 7572 7616	except that when a size of zero is specified
+R7	Transition Arg1:T29 Arg2:T35	
+T36	Post 7618 7648	the existing file is truncated
+R8	Transition Arg1:T34 Arg2:T36	
+T37	Value 7546 7557	createattrs
+T38	Variable 7522 7532	attributes
+T39	Equal 7533 7545	specified by
+E7	Equal:T39 Value-Arg:T37 Variable-Arg:T38
+T40	Variable 7591 7595	size
+A2	Length T40
+T41	Value 7599 7603	zero
+T42	Equal 7596 7598	of
+E8	Equal:T42 Value-Arg:T41 Variable-Arg:T40
+T43	Variable 7622 7635	existing file
+T44	openhow 7661 7669	GUARDED4
+T45	Extrinsic-Post 7684 7748	the server checks for the presence of a duplicate object by name
+T46	Extrinsic-Pre 7684 7748	the server checks for the presence of a duplicate object by name
+T47	Pre 7658 7682	If GUARDED4 is specified
+R9	Transition Arg1:T47 Arg2:T45	
+T48	Post 7749 7777	before performing the create
+R10	Transition Arg1:T46 Arg2:T48	
+T49	Value 7661 7669	GUARDED4
+T50	Equal 7670 7682	is specified
+E9	Equal:T50 Value-Arg:T49 Variable-Arg:T44
+T51	Post 7810 7861	an error of NFS4ERR_EXIST is returned as the status
+T52	Pre 7787 7808	If a duplicate exists
+R11	Transition Arg1:T52 Arg2:T51	
+T53	Post 7787 7808	If a duplicate exists
+R12	Transition Arg1:T47 Arg2:T53	
+T54	Value 7822 7835	NFS4ERR_EXIST
+T55	Variable 7855 7861	status
+T56	Assign 7839 7847	returned
+E10	Assign:T56 Variable-Arg:T55 Value-Arg:T54
+T57	Value 7792 7801	duplicate
+T58	Post 8049 8167	the server will return to the client an attribute mask signifying which attributes were successfully set for the objec
+T59	openhow 7988 7998	UNCHECKED4
+T60	openhow 8003 8011	GUARDED4
+T61	Pre 8014 8048	where the operation is successful,
+T62	Post 8014 8047	where the operation is successful
+R13	Transition Arg1:T22 Arg2:T62	
+R14	Transition Arg1:T61 Arg2:T58	
+R15	Transition Arg1:T47 Arg2:T62	
+T63	Value 8037 8047	successful
+T64	Equal 8034 8036	is
+E11	Equal:T64 Value-Arg:T63 Variable-Arg:T65
+T65	Variable 8024 8033	operation
+T66	openhow 8178 8188	EXCLUSIVE4
+T67	Pre 8178 8399	EXCLUSIVE4 specifies that the server is to follow exclusive creation semantics, using the verifier to ensure exclusive creation of the target <NULL>.  The server should check for the presence of a duplicate object by name
+T68	Post 8409 8437	If the object does not exist
+T69	Pre 8409 8437	If the object does not exist
+T70	Post 8439 8508	the server creates the object and stores the verifier with the object
+R16	Transition Arg1:T69 Arg2:T70	
+R17	Transition Arg1:T67 Arg2:T68	
+T71	Post 8518 8542	If the object does exist
+T72	Pre 8518 8542	If the object does exist
+R18	Transition Arg1:T67 Arg2:T71	
+T73	Pre 8547 8610	the stored verifier matches the verifier provided by the client
+T74	Post 8547 8610	the stored verifier matches the verifier provided by the client
+R19	Transition Arg1:T72 Arg2:T74	
+T75	Post 8612 8675	the server uses the existing object as the newly created object
+R20	Transition Arg1:T73 Arg2:T75	
+T76	Post 8685 8722	If the stored verifier does not match
+T77	Pre 8685 8722	If the stored verifier does not match
+R21	Transition Arg1:T73 Arg2:T76	
+T78	Post 8724 8766	then an error of NFS4ERR_EXIST is returned
+R22	Transition Arg1:T77 Arg2:T78	
+T79	Value 8741 8754	NFS4ERR_EXIST
+T80	Assign 8758 8766	returned
+E12	Assign:T80 Variable-Arg:T81 Value-Arg:T79
+T81	Variable 8767 8773	<NULL>
+T82	Variable 8416 8422	object
+T83	Equal 8423 8437	does not exist
+E13	Equal:T83 Variable-Arg:T82
+A3	Negation E13
+T84	Equal 8532 8542	does exist
+E14	Equal:T84 Variable-Arg:T85
+T85	Variable 8525 8531	object
+T86	Variable 8551 8566	stored verifier
+T87	Equal 8567 8574	matches
+E15	Equal:T87 Variable-Arg2:T86 Value-Arg:T88
+T88	Variable 8579 8610	verifier provided by the client
+T89	Variable 8655 8675	newly created object
+T90	Value 8632 8647	existing object
+T91	Equal 8648 8650	as
+E16	Equal:T91 Variable-Arg:T89 Value-Arg:T90
+T92	Equal 8708 8722	does not match
+E17	Equal:T92 Variable-Arg:T93
+A4	Negation E17
+T93	Variable 8692 8707	stored verifier
+T94	OperationName 5651 5657	LOOKUP
+T95	OperationName 5730 5736	LOOKUP
+T96	OperationName 5746 5750	OPEN
+T97	OperationName 5870 5875	CLOSE
+T98	OperationName 5895 5900	CLOSE
+T99	OperationName 6011 6015	OPEN
+T100	OperationName 6033 6038	GETFH
+T101	Pre 7871 7899	If the object does not exist
+T102	Post 7901 7953	the request is performed as described for UNCHECKED4
+R23	Transition Arg1:T101 Arg2:T102	
+T103	Post 7871 7899	If the object does not exist
+R24	Transition Arg1:T47 Arg2:T103	
+T104	openhow 7943 7953	UNCHECKED4
+T105	Extrinsic-Pre 9726 9786	For clients that do not directly support SHAREs (i.e., UNIX)
+T106	Extrinsic-Post 9788 9831	the expected deny value is DENY_NONE <NULL>
+R25	Transition Arg1:T105 Arg2:T106	
+T107	share_deny 9801 9811	deny value
+T108	Value 9815 9824	DENY_NONE
+T109	Equal 9812 9814	is
+E18	Equal:T109 Value-Arg:T108 Variable-Arg:T107
+T110	Extrinsic-Pre 9834 9926	In the case that there is an existing share reservation that conflicts with the OPEN request
+T111	Variable 9863 9889	existing share reservation
+T112	OperationName 9914 9918	OPEN
+T113	Post 9928 9984	the server returns the error NFS4ERR_SHARE_DENIED <NULL>
+R26	Transition Arg1:T110 Arg2:T113	
+T114	Value 9957 9977	NFS4ERR_SHARE_DENIED
+T115	Variable 9978 9984	<NULL>
+T116	Assign 9932 9946	server returns
+E19	Assign:T116 Variable-Arg:T115 Value-Arg:T114
+A5	Server E19
+T117	Extrinsic-Pre 10181 10250	In the case that the client is recovering state from a server failure
+T118	Extrinsic-Post 10252 10373	the claim field of the OPEN argument is used to signify that the request is meant to reclaim state previously held <NULL>
+R27	Transition Arg1:T117 Arg2:T118	
+T119	OperationName 10275 10279	OPEN
+T120	claim 10256 10261	claim
+T122	Extrinsic-Post 10633 10643	CLAIM_NULL
+T123	Value 10633 10643	CLAIM_NULL
+T124	OperationName 10676 10680	OPEN
+T121	Extrinsic-Pre 10646 10688	For the client, this is a new OPEN request
+T125	Extrinsic-Post 10690 10767	and there is no previous state associated with the file for the client <NULL>
+T126	Extrinsic-Pre 10690 10767	and there is no previous state associated with the file for the client <NULL>
+R28	Transition Arg1:T121 Arg2:T125	
+R29	Transition Arg1:T126 Arg2:T122	
+T127	Variable 10761 10767	<NULL>
+T128	Equal 10633 10643	CLAIM_NULL
+E20	Equal:T128 Value-Arg:T123 Variable-Arg:T127
+T129	Value 10770 10784	CLAIM_PREVIOUS
+T130	Equal 10770 10784	CLAIM_PREVIOUS
+E21	Equal:T130 Value-Arg:T129 Variable-Arg:T133
+T131	Extrinsic-Post 10770 10784	CLAIM_PREVIOUS
+T132	Extrinsic-Pre 10787 10886	The client is claiming basic OPEN state for a file that was held previous to a server reboot <NULL>
+T133	Variable 10880 10886	<NULL>
+T134	OperationName 10816 10820	OPEN
+T135	Extrinsic-Post 11029 11047	CLAIM_DELEGATE_CUR
+R30	Transition Arg1:T132 Arg2:T131	
+T136	Variable 11120 11126	<NULL>
+T137	Value 11029 11047	CLAIM_DELEGATE_CUR
+T138	Equal 11029 11047	CLAIM_DELEGATE_CUR
+E22	Equal:T138 Value-Arg:T137 Variable-Arg:T136
+T139	Extrinsic-Pre 11050 11126	The client is claiming a delegation for OPEN as granted by the server <NULL>
+R31	Transition Arg1:T139 Arg2:T135	
+T140	OperationName 11090 11094	OPEN
+T141	Extrinsic-Post 11195 11214	CLAIM_DELEGATE_PREV
+T142	Value 11195 11214	CLAIM_DELEGATE_PREV
+T143	Equal 11195 11214	CLAIM_DELEGATE_PREV
+E23	Equal:T143 Value-Arg:T142 Variable-Arg:T145
+T144	Extrinsic-Pre 11217 11297	The client is claiming a delegation granted to a previous client instance <NULL>
+R32	Transition Arg1:T144 Arg2:T141	
+T145	Variable 11291 11297	<NULL>
+T146	Extrinsic-Pre 12187 12400	For OPEN requests whose claim type is other than CLAIM_PREVIOUS (i.e., requests other than those devoted to reclaiming opens after a server reboot) that reach the server during its grace or lease expiration period
+T147	Extrinsic-Post 12402 12453	the server returns an error of NFS4ERR_GRACE <NULL>
+T148	OperationName 12191 12195	OPEN
+T149	Value 12236 12250	CLAIM_PREVIOUS
+T150	claim 12211 12221	claim type
+T151	Equal 12222 12235	is other than
+E24	Equal:T151 Value-Arg:T149 Variable-Arg:T150
+A6	Negation E24
+T152	Value 12433 12446	NFS4ERR_GRACE
+T153	Variable 12447 12453	<NULL>
+T154	Assign 12413 12420	returns
+E25	Assign:T154 Value-Arg:T152 Variable-Arg:T153
+A7	Server E25
+T155	Pre 13638 13672	If the component is of zero length
+T156	Post 13674 13711	NFS4ERR_INVAL will be returned <NULL>
+T157	Variable 13645 13654	component
+T158	Equal 13655 13660	is of
+E26	Equal:T158 Value-Arg:T159 Variable-Arg:T157
+T159	Value 13661 13672	zero length
+A8	Length T159
+T160	Value 13674 13687	NFS4ERR_INVAL
+T161	Assign 13696 13704	returned
+E27	Assign:T161 Variable-Arg:T162 Value-Arg:T160
+T162	Variable 13705 13711	<NULL>
+R33	Transition Arg1:T155 Arg2:T156	
+T163	OperationName 13865 13869	OPEN
+T164	Extrinsic-Pre 13857 13948	When an OPEN is done and the specified open-owner already has the resulting filehandle open
+T165	Post 13950 14052	the result is to "OR" together the new share and deny status, together with the existing status <NULL>
+R34	Transition Arg1:T164 Arg2:T165	
+T166	share_deny 13999 14010	deny status
+T167	share_access 13985 13994	new share
+T168	Variable 14039 14045	status
+T169	Variable 14046 14052	<NULL>
+T170	Variable 13968 13970	OR
+T171	Extrinsic-Post 14055 14152	In this case, only a single CLOSE need be done, even though multiple OPENs were completed <NULL>.
+T172	Extrinsic-Pre 13950 14053	the result is to "OR" together the new share and deny status, together with the existing status <NULL>.
+R35	Transition Arg1:T172 Arg2:T171	
+T173	OperationName 14167 14171	OPEN
+T174	Extrinsic-Post 14699 14777	the server will return NFS4ERR_ROFS to indicate a read-only file system <NULL>
+T175	Extrinsic-Pre 14528 14670	If the underlying file system at the server is only accessible in a read-only mode and the OPEN request has specified OPEN4_SHARE_ACCESS_WRITE
+T176	OperationName 14619 14623	OPEN
+T177	Value 14646 14670	OPEN4_SHARE_ACCESS_WRITE
+T178	Variable 14624 14631	request
+T179	Equal 14632 14645	has specified
+E28	Equal:T179 Variable-Arg:T178 Value-Arg:T177
+T180	Value 14674 14697	OPEN4_SHARE_ACCESS_BOTH
+T181	Extrinsic-Pre 14528 14697	If the underlying file system at the server is only accessible in a read-only mode and the OPEN request has specified OPEN4_SHARE_ACCESS_WRITE or OPEN4_SHARE_ACCESS_BOTH
+E29	Equal:T179 Value-Arg:T180 Variable-Arg:T178
+R36	Transition Arg1:T175 Arg2:T174	
+R37	Transition Arg1:T181 Arg2:T174	
+T182	Value 14722 14734	NFS4ERR_ROFS
+T183	Variable 14771 14777	<NULL>
+T184	Assign 14715 14721	return
+E30	Assign:T184 Value-Arg:T182 Variable-Arg:T183
+A9	Server E30
+T185	Extrinsic-Post 14810 14874	the server MUST derive the owner, owner ACE, group, or group ACE
+T186	owner 14837 14842	owner
+T187	Extrinsic-Pre 14875 14966	if any of the four attributes are required and supported by the server's file system <NULL>
+R38	Transition Arg1:T187 Arg2:T185	
+T188	attrs 14894 14904	attributes
+T189	Extrinsic-Pre 15119 15290	if createattrs is specified and includes owner or group (or corresponding ACEs) that the principal in the RPC's credentials does not have authorization to create files for
+T190	Extrinsic-Post 15292 15338	then the server may return NFS4ERR_PERM <NULL>
+R39	Transition Arg1:T189 Arg2:T190	
+T191	Value 15319 15331	NFS4ERR_PERM
+T192	Variable 15332 15338	<NULL>
+T193	Assign 15312 15318	return
+E31	Assign:T193 Value-Arg:T191 Variable-Arg:T192
+A10	Server E31
+T194	attrs 15122 15133	createattrs
+T195	Comparison 15151 15159	includes
+E32	Comparison:T195 Variable-Arg:T194 Value-Arg:T196
+T196	Variable 15160 15165	owner
+T197	Variable 15169 15174	group
+E33	Comparison:T195 Variable-Arg:T194 Value-Arg:T197
+T198	Extrinsic-Pre 15341 15410	In the case where an OPEN specifies a size of zero (e.g., truncation)
+T199	Extrinsic-Post 15412 15445	and the file has named attributes
+T200	Extrinsic-Pre 15412 15445	and the file has named attributes
+T201	Extrinsic-Post 15447 15489	the named attributes are left as is <NULL>
+T202	Extrinsic-Pre 16117 16145	If the object does not exist
+T203	Extrinsic-Post 16147 16225	the server creates the object and stores the verifier in stable storage <NULL>
+T204	Variable 16124 16130	object
+T205	Comparison 16131 16145	does not exist
+E34	Comparison:T205 Variable-Arg:T204
+T206	Variable 16192 16200	verifier
+R40	Transition Arg1:T202 Arg2:T203	
+T207	Extrinsic-Pre 17275 17414	If the server cannot support these exclusive create semantics, possibly because of the requirement to commit the verifier to stable storage
+T208	Extrinsic-Post 17416 17485	it should fail the OPEN request with the error NFS4ERR_NOTSUPP <NULL>
+R41	Transition Arg1:T207 Arg2:T208	
+T209	OperationName 17435 17439	OPEN
+T210	Value 17463 17478	NFS4ERR_NOTSUPP
+T211	Assign 17426 17430	fail
+E35	Assign:T211 Value-Arg:T210 Variable-Arg:T212
+T212	Variable 17479 17485	<NULL>
+T213	Extrinsic-Pre 17488 17552	During an exclusive CREATE request, if the object already exists
+T214	OperationName 17508 17514	CREATE
+T215	Extrinsic-Post 17554 17655	the server reconstructs the object's verifier and compares it with the verifier in the request <NULL>
+R42	Transition Arg1:T213 Arg2:T215	
+T217	Variable 17625 17648	verifier in the request
+T216	Variable 17582 17598	object's verifie
+T218	Comparison 17604 17612	compares
+E36	Comparison:T218 Variable-Arg2:T216 Value-Arg:T217
+T219	Extrinsic-Pre 17659 17671	f they match
+T220	Extrinsic-Post 17673 17722	the server treats the request as a success <NULL>
+T221	Value 17708 17715	success
+T222	Variable 17716 17722	<NULL>
+T223	Assign 17703 17705	as
+E37	Assign:T223 Value-Arg:T221 Variable-Arg:T222
+A11	Server E37
+T224	Extrinsic-Post 17658 17671	If they match
+T225	Extrinsic-Pre 17554 17647	the server reconstructs the object's verifier and compares it with the verifier in the reques
+R44	Transition Arg1:T225 Arg2:T224	
+R43	Transition Arg1:T219 Arg2:T220	
+T226	Extrinsic-Post 17940 17999	he request is rejected with the status NFS4ERR_EXIST <NULL>
+T227	Value 17979 17992	NFS4ERR_EXIST
+T228	Variable 17993 17999	<NULL>
+T229	Assign 17972 17978	status
+E38	Assign:T229 Value-Arg:T227 Variable-Arg:T228
+T230	Extrinsic-Pre 17908 17937	If the verifiers do not match
+T231	Extrinsic-Post 17908 17937	If the verifiers do not match
+R45	Transition Arg1:T230 Arg2:T226	
+R46	Transition Arg1:T225 Arg2:T231	
+T232	Variable 17915 17924	verifiers
+R47	Transition Arg1:T198 Arg2:T199	
+R48	Transition Arg1:T200 Arg2:T201	

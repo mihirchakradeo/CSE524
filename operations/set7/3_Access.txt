@@ -1,0 +1,71 @@
+16. NFSv4 Operations
+
+16.1. Operation 3: ACCESS - Check Access Rights
+
+16.1.1. SYNOPSIS
+
+     (cfh), accessreq -> supported, accessrights
+
+16.1.2 ARGUMENT
+
+   const ACCESS4_READ      = 0x00000001;
+   const ACCESS4_LOOKUP    = 0x00000002;
+   const ACCESS4_MODIFY    = 0x00000004;
+   const ACCESS4_EXTEND    = 0x00000008;				
+   const ACCESS4_DELETE    = 0x00000010;
+   const ACCESS4_EXECUTE   = 0x00000020;
+
+   struct ACCESS4args {
+           /* CURRENT_FH: object */
+           uint32_t        access;
+   };
+
+16.1.3. RESULT
+
+   struct ACCESS4resok {
+           uint32_t        supported;
+           uint32_t        access;
+   };
+
+   union ACCESS4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            ACCESS4resok   resok4;
+    default:
+            void;
+   };
+
+16.1.4.  DESCRIPTION
+
+ACCESS determines the access rights that a user, as identified by the credentials in the RPC request, has with respect to the file system object specified by the current filehandle <NULL>.  The client encodes the set of access rights that are to be checked in the bitmask "access" <NULL>. The server checks the permissions encoded in the bitmask <NULL>.  If status of NFS4_OK is returned, two bitmasks are included in the response <NULL>.  The first, "supported", represents the access rights for which the server can verify reliably <NULL>.  The second, "access", represents the access rights available to the user for the filehandle provided <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+Note that the supported field will contain only as many values as were originally sent in the arguments <NULL>.  For example, if the client sends an ACCESS operation with only the ACCESS4_READ value set and the server supports this value, the server will return only ACCESS4_READ even if it could have reliably checked other values <NULL>.
+
+The results of this operation are necessarily advisory in nature <NULL>.  A return status of NFS4_OK and the appropriate bit set in the bitmask do not imply that such access will be allowed to the file system object in the future <NULL>.  This is because access rights can be revoked by the server at any time <NULL>.
+
+The following access permissions may be requested:
+
+ACCESS4_READ:  Read data from file or read a directory  <NULL>.
+
+ACCESS4_LOOKUP:  Look up a name in a directory (no meaning for non-directory objects) <NULL>. 
+
+ACCESS4_MODIFY:  Rewrite existing file data or modify existing directory entries <NULL>. 
+
+ACCESS4_EXTEND:  Write new data or add directory entries <NULL>.
+
+ACCESS4_DELETE:  Delete an existing directory entry <NULL>. 
+
+ACCESS4_EXECUTE:  Execute file (no meaning for a directory) <NULL>. 
+
+On success, the current filehandle retains its value <NULL>. 
+
+16.1.5. IMPLEMENTATION
+
+In general, it is not sufficient for the client to attempt to deduce access permissions by inspecting the uid, gid, and mode fields in the file attributes or by attempting to interpret the contents of the ACL attribute <NULL>.  This is because the server may perform uid or gid mapping or enforce additional access control restrictions <NULL>.  It is also possible that the server may not be in the same ID space as the client <NULL>.  In these cases (and perhaps others), the client cannot reliably perform an access check with only current file attributes <NULL>. 
+
+In the NFSv2 protocol, the only reliable way to determine whether an operation was allowed was to try it and see if it succeeded or failed <NULL>.  Using the ACCESS operation in the NFSv4 protocol, the client can ask the server to indicate whether or not one or more classes of operations are permitted <NULL>.  The ACCESS operation is provided to allow clients to check before doing a series of operations that might result in an access failure <NULL>.  The OPEN operation provides a point where the server can verify access to the file object and the method to return that information to the client <NULL>.  The ACCESS operation is still useful for directory operations or for use in the case where the UNIX API "access" is used on the client <NULL>. 
+
+The information returned by the server in response to an ACCESS call is not permanent <NULL>.  It was correct at the exact time that the server performed the checks, but not necessarily afterward <NULL>.  The server can revoke access permission at any time <NULL>. 
+
+The client should use the effective credentials of the user to build the authentication information in the ACCESS request used to determine access rights <NULL>.  It is the effective user and group credentials that are used in subsequent READ and WRITE operations. Many implementations do not directly support the ACCESS4_DELETE permission <NULL>.  Operating systems like UNIX will ignore the ACCESS4_DELETE bit if set on an access request on a non-directory object <NULL>.  In these systems, delete permission on a file is determined by the access permissions on the directory in which the file resides, instead of being determined by the permissions of the file itself. Therefore, the mask returned enumerating which access rights can be supported will have the ACCESS4_DELETE value set to 0 <NULL>.  This indicates to the client that the server was unable to check that particular access right <NULL>.  The ACCESS4_DELETE bit in the access mask returned will then be ignored by the client <NULL>. 

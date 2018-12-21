@@ -1,0 +1,40 @@
+16.35.  Operation 37: VERIFY - Verify Same Attributes
+
+16.35.1.  SYNOPSIS
+
+     (cfh), fattr -> -
+
+16.35.2.  ARGUMENT
+
+   struct VERIFY4args {
+           /* CURRENT_FH: object */
+           fattr4          obj_attributes;
+   };
+
+16.35.3.  RESULT
+
+   struct VERIFY4res {
+           nfsstat4        status;
+   };
+
+16.35.4.  DESCRIPTION
+
+The VERIFY operation is used to verify that attributes have a value assumed by the client before proceeding with subsequent operations in the COMPOUND request <NULL>.  If any of the attributes do not match, then the error NFS4ERR_NOT_SAME must be returned <NULL>.  The current filehandle retains its value after successful completion of the operation <NULL>.
+
+16.35.5.  IMPLEMENTATION
+
+One possible use of the VERIFY operation is the following COMPOUND sequence <NULL>.  With this, the client is attempting to verify that the file being removed will match what the client expects to be removed <NULL>. This sequence can help prevent the unintended deletion of a file <NULL>.
+
+PUTFH (directory filehandle)
+LOOKUP (filename)
+VERIFY (filehandle == fh)
+PUTFH (directory filehandle)
+REMOVE (filename)
+
+This sequence does not prevent a second client from removing and creating a new file in the middle of this sequence, but it does help avoid the unintended result <NULL>.
+
+In the case that a RECOMMENDED attribute is specified in the VERIFY operation and the server does not support that attribute for the file system object, the error NFS4ERR_ATTRNOTSUPP is returned to the client <NULL>.
+
+When the attribute rdattr_error or any write-only attribute (e.g., time_modify_set) is specified, the error NFS4ERR_INVAL is returned to the client <NULL>.
+
+

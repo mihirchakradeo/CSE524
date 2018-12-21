@@ -1,0 +1,20 @@
+T1	cfh 314 332	current filehandle
+T2	Pre 519 529	On success
+T3	Post 531 578	the current filehandle retains its value <NULL>
+R1	Transition Arg1:T2 Arg2:T3	
+T4	Value 522 529	success
+T5	Comparison 519 521	On
+E1	Comparison:T5 Value-Arg:T4 Variable-Arg:T6
+T6	Variable 572 578	<NULL>
+T7	cfh 535 553	current filehandle
+T8	cfh 566 571	value
+T9	Equal 554 565	retains its
+E2	Equal:T9 Value-Arg:T8 Variable-Arg:T7
+T10	Extrinsic-Pre 482 516	with the RESTOREFH operator <NULL>
+T11	OperationName 491 500	RESTOREFH
+T12	Extrinsic-Post 419 481	The saved filehandle can be restored as the current filehandle
+R2	Transition Arg1:T10 Arg2:T12	
+T13	sfh 423 439	saved filehandle
+T14	cfh 463 481	current filehandle
+T15	Assign 447 455	restored
+E3	Assign:T15 Value-Arg:T14 Variable-Arg:T13

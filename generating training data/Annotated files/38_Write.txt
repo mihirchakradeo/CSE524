@@ -1,0 +1,86 @@
+16.36.  Operation 38: WRITE - Write to File
+
+16.36.1.  SYNOPSIS
+
+     (cfh), stateid, offset, stable, data -> count, committed, writeverf
+
+16.36.2.  ARGUMENT
+
+   enum stable_how4 {
+           UNSTABLE4       = 0,
+           DATA_SYNC4      = 1,
+           FILE_SYNC4      = 2
+   };
+
+   struct WRITE4args {
+           /* CURRENT_FH: file */
+           stateid4        stateid;
+           offset4         offset;
+           stable_how4     stable;
+           opaque          data<>;
+   };
+
+16.36.3.  RESULT
+
+   struct WRITE4resok {
+           count4          count;
+           stable_how4     committed;
+           verifier4       writeverf;
+   };
+
+   union WRITE4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            WRITE4resok    resok4;
+    default:
+            void;
+   };
+
+16.36.4.  DESCRIPTION
+
+The WRITE operation is used to write data to a regular file <NULL>.  The target file is specified by the current filehandle <NULL>.  The offset specifies the offset where the data should be written <NULL>.  An offset of 0 (zero) specifies that the write should start at the beginning of the file <NULL>.  The count, as encoded as part of the opaque data parameter, represents the number of bytes of data that are to be written <NULL>.  If the count is 0 (zero), the WRITE will succeed and return a count of 0 (zero) subject to permissions checking <NULL>.  The server may choose to write fewer bytes than requested by the client <NULL>.
+
+Part of the WRITE request is a specification of how the WRITE is to be performed <NULL>.  The client specifies with the stable parameter the method of how the data is to be processed by the server <NULL>.  If stable is FILE_SYNC4, the server must commit the data written plus all file system metadata to stable storage before returning results <NULL>.  This corresponds to the NFSv2 protocol semantics <NULL>.  Any other behavior constitutes a protocol violation <NULL>.  If stable is DATA_SYNC4, then the server must commit all of the data to stable storage and enough of the metadata to retrieve the data before returning <NULL>.  The server implementer is free to implement DATA_SYNC4 in the same fashion as FILE_SYNC4, but with a possible performance drop <NULL>.  If stable is UNSTABLE4, the server is free to commit any part of the data and the metadata to stable storage, including all or none, before returning a reply to the client <NULL>.  There is no guarantee whether or when any uncommitted data will subsequently be committed to stable storage <NULL>. The only guarantees made by the server are that it will not destroy any data without changing the value of verf and that it will not commit the data and metadata at a level less than that requested by the client <NULL>.
+
+The stateid value for a WRITE request represents a value returned from a previous byte-range lock or share reservation request or the stateid associated with a delegation <NULL>.  The stateid is used by the server to verify that the associated share reservation and any byte-range locks are still valid and to update lease timeouts for the client <NULL>.
+
+Upon successful completion, the following results are returned <NULL>.  The count result is the number of bytes of data written to the file <NULL>.  The server may write fewer bytes than requested <NULL>.  If so, the actual number of bytes written starting at location, offset, is returned <NULL>.
+
+The server also returns an indication of the level of commitment of the data and metadata via committed <NULL>.  If the server committed all data and metadata to stable storage, committed should be set to FILE_SYNC4 <NULL>.  If the level of commitment was at least as strong as DATA_SYNC4, then committed should be set to DATA_SYNC4 <NULL>.  Otherwise, committed must be returned as UNSTABLE4 <NULL>.  If stable was FILE4_SYNC, then committed must also be FILE_SYNC4: anything else constitutes a protocol violation <NULL>.  If stable was DATA_SYNC4, then committed may be FILE_SYNC4 or DATA_SYNC4: anything else constitutes a protocol violation <NULL>.  If stable was UNSTABLE4, then committed may be either FILE_SYNC4, DATA_SYNC4, or UNSTABLE4 <NULL>.
+
+The final portion of the result is the write verifier <NULL>.  The write verifier is a cookie that the client can use to determine whether the server has changed instance (boot) state between a call to WRITE and a subsequent call to either WRITE or COMMIT <NULL>.  This cookie must be consistent during a single instance of the NFSv4 protocol service and must be unique between instances of the NFSv4 protocol server, where uncommitted data may be lost <NULL>.
+
+If a client writes data to the server with the stable argument set to UNSTABLE4 and the reply yields a committed response of DATA_SYNC4 or UNSTABLE4, the client will follow up at some time in the future with a COMMIT operation to synchronize outstanding asynchronous data and metadata with the server's stable storage, barring client error <NULL>.  It is possible that due to client crash or other error a subsequent COMMIT will not be received by the server <NULL>.
+
+For a WRITE using the special anonymous stateid, the server MAY allow the WRITE to be serviced subject to mandatory file locks or the current share deny modes for the file <NULL>.  For a WRITE using the special READ bypass stateid, the server MUST NOT allow the WRITE operation to bypass locking checks at the server, and the WRITE is treated exactly the same as if the anonymous stateid were used <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.36.5.  IMPLEMENTATION
+
+It is possible for the server to write fewer bytes of data than requested by the client <NULL>.  In this case, the server should not return an error unless no data was written at all <NULL>.  If the server writes less than the number of bytes specified, the client should issue another WRITE to write the remaining data <NULL>.
+
+It is assumed that the act of writing data to a file will cause the time_modify attribute of the file to be updated <NULL>.  However, the time_modify attribute of the file should not be changed unless the contents of the file are changed <NULL>.  Thus, a WRITE request with count set to 0 should not cause the time_modify attribute of the file to be updated <NULL>.
+
+The definition of stable storage has been historically a point of contention <NULL>.  The following expected properties of stable storage may help in resolving design issues in the implementation <NULL>.  Stable storage is persistent storage that survives:
+
+1.  Repeated power failures <NULL>.
+
+2.  Hardware failures (of any board, power supply, etc.) <NULL>.
+
+3.  Repeated software crashes, including reboot cycle <NULL>.
+
+This definition does not address failure of the stable storage module itself <NULL>.
+
+The verifier is defined to allow a client to detect different instances of an NFSv4 protocol server over which cached, uncommitted data may be lost <NULL>.  In the most likely case, the verifier allows the client to detect server reboots <NULL>.  This information is required so that the client can safely determine whether the server could have lost cached data <NULL>.  If the server fails unexpectedly and the client has uncommitted data from previous WRITE requests (done with the stable argument set to UNSTABLE4 and in which the result committed was returned as UNSTABLE4 as well), it may not have flushed cached data to stable storage <NULL>.  The burden of recovery is on the client, and the client will need to retransmit the data to the server <NULL>.
+
+One suggested way to use the verifier would be to use the time that the server was booted or the time the server was last started (if restarting the server without a reboot results in lost buffers) <NULL>.
+
+The committed field in the results allows the client to do more effective caching <NULL>.  If the server is committing all WRITE requests to stable storage, then it should return with committed set to FILE_SYNC4, regardless of the value of the stable field in the arguments <NULL>.  A server that uses an NVRAM accelerator may choose to implement this policy <NULL>.  The client can use this to increase the effectiveness of the cache by discarding cached data that has already been committed on the server <NULL>.
+
+Some implementations may return NFS4ERR_NOSPC instead of NFS4ERR_DQUOT when a user's quota is exceeded <NULL>.  In the case that the current filehandle is a directory, the server will return NFS4ERR_ISDIR <NULL>.  If the current filehandle is not a regular file or a directory, the server will return NFS4ERR_INVAL <NULL>.
+
+If mandatory file locking is on for the file, and a corresponding record of the data to be written to file is read or write locked by an owner that is not associated with the stateid, the server will return NFS4ERR_LOCKED <NULL>.  If so, the client must check if the owner corresponding to the stateid used with the WRITE operation has a conflicting read lock that overlaps with the region that was to be written <NULL>.  If the stateid's owner has no conflicting read lock, then the client should try to get the appropriate write byte-range lock via the LOCK operation before re-attempting the WRITE <NULL>.  When the WRITE completes, the client should release the byte-range lock via LOCKU <NULL>.
+
+If the stateid's owner had a conflicting read lock, then the client has no choice but to return an error to the application that attempted the WRITE <NULL>.  The reason is that since the stateid's owner had a read lock, the server either (1) attempted to temporarily effectively upgrade this read lock to a write lock or (2) has no upgrade capability <NULL>.  If the server attempted to upgrade the read lock and failed, it is pointless for the client to re-attempt the upgrade via the LOCK operation, because there might be another client also trying to upgrade <NULL>.  If two clients are blocked trying to upgrade the same lock, the clients deadlock <NULL>.  If the server has no upgrade capability, then it is pointless to try a LOCK operation to upgrade <NULL>.
+
+

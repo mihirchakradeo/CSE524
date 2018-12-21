@@ -1,0 +1,56 @@
+T1	OperationName 977 983	CREATE
+T2	OperationName 1075 1079	OPEN
+T3	Pre 1284 1345	If an object of the same name already exists in the directory
+T4	Post 1347 1393	the server will return the error NFS4ERR_EXIST
+T5	Value 1380 1393	NFS4ERR_EXIST
+T6	Assign 1363 1369	return
+E1	Assign:T6 Variable-Arg:T7 Value-Arg:T5
+A1	Server E1
+T7	Variable 1394 1400	<NULL>
+T8	Value 1309 1313	name
+T9	Comparison 1290 1328	object of the same name already exists
+E2	Comparison:T9 Variable-Arg:T10 Value-Arg:T8
+T10	name 1290 1296	object
+R1	Transition Arg1:T3 Arg2:T4	
+T11	Pre 1404 1459	For the directory where the new file object was created
+T12	Post 1461 1513	the server returns change_info4 information in cinfo
+T13	cinfo 1508 1513	cinfo
+T14	Assign 1472 1479	returns
+E3	Assign:T14 Variable-Arg:T15 Value-Arg:T13
+A2	Server E3
+T15	Variable 1514 1520	<NULL>
+R2	Transition Arg1:T11 Arg2:T12	
+T16	Pre 1717 1749	If the objname is of zero length
+T17	Post 1751 1781	NFS4ERR_INVAL will be returned
+R3	Transition Arg1:T16 Arg2:T17	
+T18	Value 1751 1764	NFS4ERR_INVAL
+T19	Assign 1773 1781	returned
+E4	Assign:T19 Variable-Arg:T20 Value-Arg:T18
+T20	Variable 1782 1788	<NULL>
+T21	name 1724 1731	objname
+A3	Length T21
+T22	Equal 1732 1736	is o
+E5	Equal:T22 Value-Arg:T23 Variable-Arg:T21
+T23	Value 1738 1742	zero
+T24	Extrinsic-Pre 1791 1874	The objname is also subject to the normal UTF-8, character support, and name checks
+T25	Value 1833 1838	UTF-8
+T26	name 1795 1802	objname
+T27	Comparison 1811 1821	subject to
+E6	Comparison:T27 Value-Arg:T25 Variable-Arg:T26
+T28	Pre 2194 2226	When the operation is successful
+T29	Value 2216 2226	successful
+T30	Equal 2213 2215	is
+E7	Equal:T30 Value-Arg:T29 Variable-Arg:T31
+T31	Variable 2348 2354	<NULL>
+T32	Post 2228 2347	the server will return to the client an attribute mask signifying which attributes were successfully set for the object
+R4	Transition Arg1:T28 Arg2:T32	
+T33	attrset 2268 2282	attribute mask
+T34	Assign 2244 2250	return
+E8	Assign:T34 Value-Arg:T33 Variable-Arg:T31
+A4	Server E8
+T35	Extrinsic-Post 2545 2601	then the server MUST derive the owner (or the owner ACE)
+T36	Extrinsic-Pre 2358 2446	If createattrs includes neither the owner attribute nor an ACL with an ACE for the owner
+T37	Extrinsic-Pre 2448 2543	and if the server's file system both supports and requires an owner attribute (or an owner ACE)
+T38	Extrinsic-Post 2448 2543	and if the server's file system both supports and requires an owner attribute (or an owner ACE)
+R5	Transition Arg1:T36 Arg2:T38	
+R6	Transition Arg1:T37 Arg2:T35	

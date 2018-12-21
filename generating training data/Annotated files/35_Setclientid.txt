@@ -1,0 +1,97 @@
+16.33.  Operation 35: SETCLIENTID - Negotiate Client ID
+
+16.33.1.  SYNOPSIS
+
+     client, callback, callback_ident -> clientid, setclientid_confirm
+
+16.33.2.  ARGUMENT
+
+   struct SETCLIENTID4args {
+           nfs_client_id4  client;
+           cb_client4      callback;
+           uint32_t        callback_ident;
+   };
+
+16.33.3.  RESULT
+
+   struct SETCLIENTID4resok {
+           clientid4       clientid;
+           verifier4       setclientid_confirm;
+   };
+
+   union SETCLIENTID4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            SETCLIENTID4resok      resok4;
+    case NFS4ERR_CLID_INUSE:
+            clientaddr4    client_using;
+    default:
+            void;
+   };
+
+16.33.4.  DESCRIPTION
+
+The client uses the SETCLIENTID operation to notify the server of its intention to use a particular client identifier, callback, and callback_ident for subsequent requests that entail creating lock, share reservation, and delegation state on the server <NULL>.  Upon successful completion the server will return a shorthand client ID that, if confirmed via a separate step, will be used in subsequent file locking and file open requests <NULL>.  Confirmation of the client ID must be done via the SETCLIENTID_CONFIRM operation to return the client ID and setclientid_confirm values, as verifiers, to the server <NULL>.  Two verifiers are necessary because it is possible to use SETCLIENTID and SETCLIENTID_CONFIRM to modify the callback and callback_ident information but not the shorthand client ID <NULL>.  In that event, the setclientid_confirm value is effectively the only verifier <NULL>.
+
+The callback information provided in this operation will be used if the client is provided an open delegation at a future point <NULL>. Therefore, the client must correctly reflect the program and port numbers for the callback program at the time SETCLIENTID is used <NULL>.
+
+The callback_ident value is used by the server on the callback <NULL>.  The client can leverage the callback_ident to eliminate the need for more than one callback RPC program number, while still being able to determine which server is initiating the callback <NULL>.
+
+16.33.5.  IMPLEMENTATION
+
+To understand how to implement SETCLIENTID, make the following notations <NULL>.  Let:
+
+x  be the value of the client.id subfield of the SETCLIENTID4args structure <NULL>.
+
+v  be the value of the client.verifier subfield of the SETCLIENTID4args structure <NULL>.
+
+c  be the value of the client ID field returned in the SETCLIENTID4resok structure <NULL>.
+
+k  represent the value combination of the callback and callback_ident fields of the SETCLIENTID4args structure <NULL>.
+
+s  be the setclientid_confirm value returned in the SETCLIENTID4resok structure <NULL>.
+
+{ v, x, c, k, s }  be a quintuple for a client record <NULL>.  A client record is confirmed if there has been a SETCLIENTID_CONFIRM operation to confirm it <NULL>.  Otherwise, it is unconfirmed <NULL>.  An unconfirmed record is established by a SETCLIENTID call <NULL>.
+
+Since SETCLIENTID is a non-idempotent operation, let us assume that the server is implementing the duplicate request cache (DRC) <NULL>.
+
+When the server gets a SETCLIENTID { v, x, k } request, it processes it in the following manner <NULL>.
+
+o  It first looks up the request in the DRC <NULL>.  If there is a hit, it returns the result cached in the DRC <NULL>.  The server does NOT remove client state (locks, shares, delegations), nor does it modify any recorded callback and callback_ident information for client { x } <NULL>.
+
+For any DRC miss, the server takes the client ID string x, and searches for client records for x that the server may have recorded from previous SETCLIENTID calls <NULL>.  For any confirmed record with the same id string x, if the recorded principal does not match that of the SETCLIENTID call, then the server returns an NFS4ERR_CLID_INUSE error <NULL>.
+
+For brevity of discussion, the remaining description of the processing assumes that there was a DRC miss, and that where the server has previously recorded a confirmed record for client x, the aforementioned principal check has successfully passed <NULL>.
+
+o  The server checks if it has recorded a confirmed record for { v, x, c, l, s }, where l may or may not equal k <NULL>.  If so, and since the id verifier v of the request matches that which is confirmed and recorded, the server treats this as a probable callback information update and records an unconfirmed { v, x, c, k, t } and leaves the confirmed { v, x, c, l, s } in place, such that t != s <NULL>.  It does not matter whether k equals l or not <NULL>.  Any pre-existing unconfirmed { v, x, c, *, * } is removed <NULL>.
+
+The server returns { c, t } <NULL>.  It is indeed returning the old clientid4 value c, because the client apparently only wants to update callback value k to value l <NULL>.  It's possible this request is one from the Byzantine router that has stale callback information, but this is not a problem <NULL>.  The callback information update is only confirmed if followed up by a SETCLIENTID_CONFIRM { c, t } <NULL>.
+
+The server awaits confirmation of k via SETCLIENTID_CONFIRM { c, t } <NULL>.
+
+The server does NOT remove client (lock/share/delegation) state for x <NULL>.
+
+o  The server has previously recorded a confirmed { u, x, c, l, s } record such that v != u, l may or may not equal k, and has not recorded any unconfirmed { *, x, *, *, * } record for x <NULL>.  The server records an unconfirmed { v, x, d, k, t } (d != c, t != s) <NULL>.
+
+The server returns { d, t } <NULL>.
+
+The server awaits confirmation of { d, k } via SETCLIENTID_CONFIRM { d, t } <NULL>.
+
+The server does NOT remove client (lock/share/delegation) state for x <NULL>.
+
+o  The server has previously recorded a confirmed { u, x, c, l, s } record such that v != u, l may or may not equal k, and recorded an unconfirmed { w, x, d, m, t } record such that c != d, t != s, m may or may not equal k, m may or may not equal l, and k may or may not equal l <NULL>.  Whether w == v or w != v makes no difference <NULL>.  The server simply removes the unconfirmed { w, x, d, m, t } record and replaces it with an unconfirmed { v, x, e, k, r } record, such that e != d, e != c, r != t, r != s <NULL>.
+
+The server returns { e, r } <NULL>.
+
+The server awaits confirmation of { e, k } via SETCLIENTID_CONFIRM { e, r } <NULL>.
+
+The server does NOT remove client (lock/share/delegation) state for x <NULL>.
+
+o  The server has no confirmed { *, x, *, *, * } for x <NULL>.  It may or may not have recorded an unconfirmed { u, x, c, l, s }, where l may or may not equal k, and u may or may not equal v <NULL>.  Any unconfirmed record { u, x, c, l, * }, regardless of whether u == v or l == k, is replaced with an unconfirmed record { v, x, d, k, t } where d != c, t != s <NULL>.
+
+The server returns { d, t } <NULL>.
+
+The server awaits confirmation of { d, k } via SETCLIENTID_CONFIRM { d, t } <NULL>.  The server does NOT remove client (lock/share/delegation) state for x <NULL>.
+
+The server generates the clientid and setclientid_confirm values and must take care to ensure that these values are extremely unlikely to ever be regenerated <NULL>.
+
+

@@ -1,0 +1,26 @@
+T1	OperationName 408 416	READLINK
+T2	Pre 704 714	On success
+T3	Post 716 763	the current filehandle retains its value <NULL>
+R1	Transition Arg1:T2 Arg2:T3	
+T4	cfh 720 738	current filehandle
+T5	cfh 751 756	value
+T6	Equal 739 746	retains
+E1	Equal:T6 Variable-Arg:T4 Value-Arg:T5
+T7	Value 707 714	success
+T8	Equal 704 706	On
+E2	Equal:T8 Value-Arg:T7 Variable-Arg:T9
+T9	Variable 757 763	<NULL>
+T10	OperationName 1097 1105	READLINK
+T11	Pre 1451 1493	if the object is not of type NF4LNK <NULL>
+T12	Value 1480 1486	NF4LNK
+T13	Variable 1458 1464	object
+T14	Comparison 1468 1479	not of type
+E3	Comparison:T14 Value-Arg:T12 Variable-Arg:T13
+A1	Negation E3
+T15	Post 1402 1450	The server should return the error NFS4ERR_INVAL
+R2	Transition Arg1:T11 Arg2:T15	
+T16	Value 1437 1450	NFS4ERR_INVAL
+T17	Assign 1420 1426	return
+E4	Assign:T17 Value-Arg:T16 Variable-Arg:T18
+A2	Server E4
+T18	Variable 1487 1493	<NULL>

@@ -49,7 +49,7 @@ def build_dictionaries(filename):
 def get_unique_vars():
 	unique_vars = set()
 
-	for file in glob.glob("operations/set3/*.txt"):
+	for file in glob.glob("operations/read/*.txt"):
 	# for file in glob.glob("RFCs/*.txt"):
 		# print file
 		sets = build_dictionaries(file)

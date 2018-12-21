@@ -1,0 +1,77 @@
+T1	Variable 674 690	conflicting lock
+T2	Extrinsic-Pre 669 697	If a conflicting lock exists
+T3	Post 699 771	the owner, offset, length, and type of the conflicting lock are returned
+R1	Transition Arg1:T2 Arg2:T3	
+T4	owner 703 708	owner
+T5	offset 710 716	offset
+T6	length 718 724	length
+T7	Variable 730 758	type of the conflicting lock
+E1	Assign:T51 Value-Arg:T6 Variable-Arg:T6
+T9	Variable 832 838	<NULL>
+E2	Assign:T52 Value-Arg:T5 Variable-Arg:T5
+E3	Assign:T51 Value-Arg:T4 Variable-Arg:T4
+T10	Extrinsic-Pre 773 791	if no lock is held
+T11	Post 793 831	nothing other than NFS4_OK is returned
+T12	Value 812 819	NFS4_OK
+T13	Assign 823 831	returned
+E4	Assign:T13 Variable-Arg:T9 Value-Arg:T12
+T14	Variable 779 783	lock
+R2	Transition Arg1:T10 Arg2:T11	
+T15	Value 1207 1214	success
+T16	Variable 1257 1263	<NULL>
+T17	Equal 1204 1206	On
+E5	Equal:T17 Value-Arg:T15 Variable-Arg:T16
+T18	Pre 1204 1214	On success
+T19	Post 1216 1256	the current filehandle retains its value
+T20	cfh 1220 1238	current filehandle
+T21	cfh 1247 1256	its value
+T22	Equal 1239 1246	retains
+E6	Equal:T22 Variable-Arg:T20 Value-Arg:T21
+R3	Transition Arg1:T18 Arg2:T19	
+T23	Extrinsic-Pre 1293 1381	If the server is unable to determine the exact offset and length of the conflicting lock
+T24	Post 1384 1486	he same offset and length that were provided in the arguments should be returned in the denied results
+R4	Transition Arg1:T23 Arg2:T24	
+T25	offset 1340 1346	offset
+T26	length 1351 1357	length
+T27	offset 1392 1398	offset
+T28	length 1403 1409	length
+T29	Extrinsic-Post 1094 1194	The NFS4ERR_INVAL and NFS4ERR_BAD_RANGE errors are returned under the same circumstances as for LOCK
+T30	Value 1098 1111	NFS4ERR_INVAL
+T31	Value 1116 1133	NFS4ERR_BAD_RANGE
+T32	Variable 1195 1201	<NULL>
+T33	Assign 1145 1152	returne
+E7	Assign:T33 Variable-Arg:T32 Value-Arg:T31
+T34	Comparison 1145 1153	returned
+E8	Comparison:T34 Variable-Arg:T32 Value-Arg:T30
+T35	Extrinsic-Pre 2033 2125	If the server does examine locks that match the lock-owner for the purpose of range checking
+T36	Extrinsic-Post 2127 2161	NFS4ERR_LOCK_RANGE may be returned
+T37	Value 2127 2145	NFS4ERR_LOCK_RANGE
+T38	Assign 2153 2161	returned
+E9	Assign:T38 Value-Arg:T37 Variable-Arg:T39
+R5	Transition Arg1:T35 Arg2:T36	
+T39	Variable 2162 2168	<NULL>
+T40	Extrinsic-Post 2209 2331	clients may do a LOCK and receive NFS4ERR_LOCK_RANGE on the LOCK request because of the flexibility provided to the server
+T41	Extrinsic-Pre 2171 2207	In the event that it returns NFS4_OK
+T42	Value 2200 2207	NFS4_OK
+T43	Assign 2193 2199	eturns
+E10	Assign:T43 Value-Arg:T42 Variable-Arg:T44
+T44	Variable 2332 2338	<NULL>
+R6	Transition Arg1:T41 Arg2:T40	
+T45	Value 2243 2261	NFS4ERR_LOCK_RANGE
+T46	Assign 2235 2242	receive
+E11	Assign:T46 Value-Arg:T45 Variable-Arg:T44
+T47	Extrinsic-Pre 2341 2394	When a client holds an OPEN_DELEGATE_WRITE delegation
+T48	Extrinsic-Post 2396 2463	it may choose (see Section 16.10.5) to handle LOCK requests locally
+R7	Transition Arg1:T47 Arg2:T48	
+T49	Value 2364 2383	OPEN_DELEGATE_WRITE
+T50	Comparison 691 697	exists
+E12	Comparison:T50 Variable-Arg:T1
+T51	Assign 763 771	returned
+T52	Assign 763 771	returned
+T8	OperationName 1190 1194	LOCK
+T53	Assign 1456 1464	returned
+E13	Assign:T53 Variable-Arg:T54 Value-Arg:T28
+T54	Variable 1472 1486	denied results
+E14	Assign:T53 Value-Arg:T27 Variable-Arg:T54
+T55	OperationName 2226 2230	LOCK
+T56	OperationName 2442 2446	LOCK

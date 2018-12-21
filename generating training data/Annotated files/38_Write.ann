@@ -1,0 +1,194 @@
+T1	OperationName 811 816	WRITE
+T2	cfh 912 930	current filehandle
+T3	offset 944 950	offset
+T4	offset 1017 1023	offset
+T5	Value 1027 1035	0 (zero)
+T6	Pre 1014 1035	An offset of 0 (zero)
+T7	Post 1051 1102	the write should start at the beginning of the file
+R1	Transition Arg1:T6 Arg2:T7	
+T8	Equal 1024 1026	of
+E1	Equal:T8 Variable-Arg:T4 Value-Arg:T5
+T9	count 1116 1122	count,
+T10	count 1250 1255	count
+T11	Value 1259 1267	0 (zero)
+T12	Equal 1256 1258	is
+E2	Equal:T12 Variable-Arg:T10 Value-Arg:T11
+T13	Pre 1243 1268	If the count is 0 (zero),
+T14	OperationName 1273 1278	WRITE
+T15	Post 1269 1354	the WRITE will succeed and return a count of 0 (zero) subject to permissions checking
+R2	Transition Arg1:T13 Arg2:T15	
+T16	Value 1314 1322	0 (zero)
+T17	count 1305 1310	count
+T18	Equal 1311 1313	of
+E3	Equal:T18 Variable-Arg:T17 Value-Arg:T16
+T19	Value 1284 1291	succeed
+T20	Equal 1296 1302	return
+E4	Equal:T20 Variable-Arg:T21 Value-Arg:T19
+T21	Variable 1355 1361	<NULL>
+T22	OperationName 1457 1462	WRITE
+T23	OperationName 1501 1506	WRITE
+T24	stable 1565 1571	stable
+T25	Pre 1651 1674	If stable is FILE_SYNC4
+T26	Extrinsic-Post 1676 1788	the server must commit the data written plus all file system metadata to stable storage before returning results
+T27	stable 1654 1660	stable
+T28	Value 1664 1675	FILE_SYNC4,
+T29	Equal 1661 1663	is
+E5	Equal:T29 Variable-Arg:T27 Value-Arg:T28
+R3	Transition Arg1:T25 Arg2:T26	
+T30	Pre 1856 1874	Any other behavior
+T31	Extrinsic-Post 1875 1907	constitutes a protocol violation
+R4	Transition Arg1:T30 Arg2:T31	
+T32	stable 1920 1926	stable
+T33	Value 1930 1941	DATA_SYNC4,
+T34	Equal 1927 1929	is
+E6	Equal:T34 Value-Arg:T33 Variable-Arg:T32
+T35	Pre 1917 1941	If stable is DATA_SYNC4,
+T36	Extrinsic-Post 1942 2068	then the server must commit all of the data to stable storage and enough of the metadata to retrieve the data before returning
+R5	Transition Arg1:T35 Arg2:T36	
+T37	Pre 2214 2237	If stable is UNSTABLE4,
+T38	Extrinsic-Post 2238 2385	the server is free to commit any part of the data and the metadata to stable storage, including all or none, before returning a reply to the client
+R6	Transition Arg1:T37 Arg2:T38	
+T39	stable 2217 2223	stable
+T40	Equal 2224 2226	is
+E7	Equal:T40 Value-Arg:T41 Variable-Arg:T39
+T41	Value 2227 2236	UNSTABLE4
+T42	OperationName 2756 2761	WRITE
+T43	stateid 2736 2743	stateid
+T44	stateid 2916 2923	stateid
+T45	Extrinsic-Pre 3088 3115	Upon successful completion,
+T46	Post 3116 3150	the following results are returned
+R7	Transition Arg1:T45 Arg2:T46	
+T47	Post 3160 3227	The count result is the number of bytes of data written to the file
+R8	Transition Arg1:T45 Arg2:T47	
+T48	count 3164 3169	count
+T49	Equal 3177 3179	is
+E8	Equal:T49 Variable-Arg2:T48 Value-Arg:T50
+T50	Value 3180 3227	the number of bytes of data written to the file
+T51	Pre 3241 3284	server may write fewer bytes than requested
+T52	Post 3301 3377	the actual number of bytes written starting at location, offset, is returned
+R9	Transition Arg1:T51 Arg2:T52	
+T53	offset 3358 3364	offset
+T54	Value 3312 3335	number of bytes written
+T55	Equal 3366 3377	is returned
+E9	Equal:T55 Value-Arg:T54 Variable-Arg:T53
+T56	committed 3481 3490	committed
+T57	Equal 3403 3410	returns
+E10	Equal:T57 Value-Arg:T58 Variable-Arg:T56
+T58	Value 3428 3451	the level of commitment
+T59	Post 3387 3490	The server also returns an indication of the level of commitment of the data and metadata via committed
+R10	Transition Arg1:T45 Arg2:T59	
+R11	Transition Arg1:T45 Arg2:T52	
+T60	Equal 3575 3591	should be set to
+E11	Equal:T60 Value-Arg:T61 Variable-Arg:T62
+T61	Value 3592 3602	FILE_SYNC4
+T62	committed 3565 3574	committed
+T63	Pre 3500 3563	If the server committed all data and metadata to stable storage
+T64	Post 3565 3602	committed should be set to FILE_SYNC4
+R12	Transition Arg1:T63 Arg2:T64	
+T65	GreaterEqual 3643 3664	at least as strong as
+E12	GreaterEqual:T65 Value-Arg:T67 Variable-Arg:T66
+T66	committed 3615 3638	the level of commitment
+T67	Value 3665 3675	DATA_SYNC4
+T68	committed 3740 3749	committed
+T69	Equal 3750 3769	must be returned as
+E13	Equal:T69 Value-Arg:T70 Variable-Arg:T68
+T70	Value 3770 3779	UNSTABLE4
+T71	Pre 3789 3814	If stable was FILE4_SYNC,
+T72	Pre 3911 3935	If stable was DATA_SYNC4
+T73	Pre 4041 4064	If stable was UNSTABLE4
+T74	committed 3820 3829	committed
+T75	committed 3942 3951	committed
+T76	committed 4071 4080	committed
+T77	Equal 3830 3842	must also be
+E14	Equal:T77 Variable-Arg:T74 Value-Arg:T80
+T78	Equal 3952 3958	may be
+E15	Equal:T78 Variable-Arg:T75 Value-Arg:T81
+T79	Equal 4081 4094	may be either
+E16	Equal:T79 Variable-Arg:T76 Value-Arg:T85
+T80	Value 3843 3853	FILE_SYNC4
+T81	Value 3959 3969	FILE_SYNC4
+T82	Value 3973 3983	DATA_SYNC4
+T83	Value 4095 4106	FILE_SYNC4,
+T84	Value 4107 4117	DATA_SYNC4
+T85	Value 4122 4131	UNSTABLE4
+E17	Equal:T78 Variable-Arg:T75 Value-Arg:T82
+E18	Equal:T79 Variable-Arg:T76 Value-Arg:T84
+E19	Equal:T79 Variable-Arg:T76 Value-Arg:T83
+T86	committed 3682 3691	committed
+T87	Equal 3692 3708	should be set to
+E20	Equal:T87 Value-Arg:T88 Variable-Arg:T86
+T88	Value 3709 3719	DATA_SYNC4
+T89	Pre 3612 3675	If the level of commitment was at least as strong as DATA_SYNC4
+T90	Post 3677 3719	then committed should be set to DATA_SYNC4
+R13	Transition Arg1:T89 Arg2:T90	
+T91	Post 3740 3779	committed must be returned as UNSTABLE4
+T92	Post 3815 3854	then committed must also be FILE_SYNC4:
+R14	Transition Arg1:T71 Arg2:T92	
+T93	Post 3937 3983	then committed may be FILE_SYNC4 or DATA_SYNC4
+R15	Transition Arg1:T72 Arg2:T93	
+T94	Post 4066 4131	then committed may be either FILE_SYNC4, DATA_SYNC4, or UNSTABLE4
+R16	Transition Arg1:T73 Arg2:T94	
+T95	stable 3792 3798	stable
+T96	stable 3914 3920	stable
+T97	stable 4044 4050	stable
+T98	Equal 3799 3802	was
+E21	Equal:T98 Value-Arg:T101 Variable-Arg:T95
+T99	Equal 3921 3924	was
+E22	Equal:T99 Variable-Arg:T96 Value-Arg:T102
+T100	Equal 4051 4054	was
+E23	Equal:T100 Value-Arg:T103 Variable-Arg:T97
+T101	Value 3803 3813	FILE4_SYNC
+T102	Value 3925 3935	DATA_SYNC4
+T103	Value 4055 4064	UNSTABLE4
+T104	writeverf 4180 4194	write verifier
+T105	writeverf 4208 4222	write verifier
+T106	OperationName 4343 4348	WRITE
+T107	OperationName 4381 4386	WRITE
+T108	OperationName 4390 4396	COMMIT
+T109	stable 4650 4656	stable
+T110	Equal 4666 4672	set to
+E24	Equal:T110 Value-Arg:T111 Variable-Arg:T109
+T111	Value 4673 4682	UNSTABLE4
+T112	committed 4706 4715	committed
+T113	Value 4728 4738	DATA_SYNC4
+T114	Value 4742 4751	UNSTABLE4
+T115	Equal 4697 4703	yields
+E25	Equal:T115 Variable-Arg:T112 Value-Arg:T114
+E26	Equal:T115 Variable-Arg:T112 Value-Arg:T113
+T116	Pre 4603 4751	If a client writes data to the server with the stable argument set to UNSTABLE4 and the reply yields a committed response of DATA_SYNC4 or UNSTABLE4
+T117	OperationName 4813 4819	COMMIT
+T118	OperationName 5020 5026	COMMIT
+T119	Extrinsic-Post 4753 4942	the client will follow up at some time in the future with a COMMIT operation to synchronize outstanding asynchronous data and metadata with the server's stable storage, barring client error
+R17	Transition Arg1:T116 Arg2:T119	
+T120	OperationName 5077 5082	WRITE
+T121	OperationName 5258 5263	WRITE
+T122	OperationName 5145 5150	WRITE
+T123	OperationName 5282 5286	READ
+T124	OperationName 5333 5338	WRITE
+T125	OperationName 5397 5402	WRITE
+T126	stateid 5111 5118	stateid
+T127	Value 5093 5110	special anonymous
+T128	Equal 5083 5088	using
+E27	Equal:T128 Value-Arg:T127 Variable-Arg:T126
+T129	Pre 5478 5488	On success
+T130	Post 5490 5530	the current filehandle retains its value
+T131	Value 5481 5488	success
+T132	Variable 5531 5537	<NULL>
+T133	Equal 5478 5480	On
+E28	Equal:T133 Value-Arg:T131 Variable-Arg:T132
+R18	Transition Arg1:T129 Arg2:T130	
+T134	cfh 5494 5512	current filehandle
+T135	Equal 5513 5520	retains
+E29	Equal:T135 Value-Arg:T136 Variable-Arg:T134
+T136	cfh 5521 5530	its value
+T137	stateid 5294 5301	stateid
+T138	Equal 5264 5269	using
+E30	Equal:T138 Value-Arg:T139 Variable-Arg:T137
+T139	Value 5274 5293	special READ bypass
+T140	stateid 5451 5458	stateid
+T141	Pre 5071 5119	For a WRITE using the special anonymous stateid,
+T142	Extrinsic-Post 5120 5242	the server MAY allow the WRITE to be serviced subject to mandatory file locks or the current share deny modes for the file
+R19	Transition Arg1:T141 Arg2:T142	
+T143	Pre 5252 5301	For a WRITE using the special READ bypass stateid
+T144	Extrinsic-Post 5303 5468	the server MUST NOT allow the WRITE operation to bypass locking checks at the server, and the WRITE is treated exactly the same as if the anonymous stateid were used
+R20	Transition Arg1:T143 Arg2:T144	

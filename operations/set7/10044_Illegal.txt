@@ -1,0 +1,29 @@
+16.38.  Operation 10044: ILLEGAL - Illegal Operation
+
+16.38.1.  SYNOPSIS
+
+     <null> -> ()
+
+16.38.2.  ARGUMENT
+
+     void;
+
+16.38.3.  RESULT
+
+   struct ILLEGAL4res {
+           nfsstat4        status;
+   };
+
+16.38.4.  DESCRIPTION
+
+This operation is a placeholder for encoding a result to handle the case of the client sending an operation code within COMPOUND that is not supported <NULL>.  See Section 15.2.4 for more details <NULL>.
+
+The status field of ILLEGAL4res MUST be set to NFS4ERR_OP_ILLEGAL <NULL>.
+
+16.38.5.  IMPLEMENTATION
+
+A client will probably not send an operation with code OP_ILLEGAL, but if it does, the response will be ILLEGAL4res, just as it would be with any other invalid operation code <NULL>.  Note that if the server gets an illegal operation code that is not OP_ILLEGAL, and if the server checks for legal operation codes during the XDR decode phase, then the ILLEGAL4res would not be returned <NULL>.
+
+
+
+

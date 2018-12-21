@@ -1,0 +1,38 @@
+16.8.  Operation 10: GETFH - Get Current Filehandle
+
+16.8.1.  SYNOPSIS
+
+     (cfh) -> filehandle
+
+16.8.2.  ARGUMENT
+
+     /* CURRENT_FH: */
+     void;
+
+16.8.3.  RESULT
+
+   struct GETFH4resok {
+           nfs_fh4         object;
+   };
+
+   union GETFH4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            GETFH4resok     resok4;
+    default:
+            void;
+   };
+
+16.8.4.  DESCRIPTION
+
+This operation returns the current filehandle value <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.8.5.  IMPLEMENTATION
+
+Operations that change the current filehandle, like LOOKUP or CREATE, do not automatically return the new filehandle as a result <NULL>.  For instance, if a client needs to look up a directory entry and obtain its filehandle, then the following request is needed <NULL>.
+
+PUTFH  (directory filehandle)
+LOOKUP (entry name)
+GETFH
+

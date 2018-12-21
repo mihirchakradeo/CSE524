@@ -1,0 +1,35 @@
+16.28.  Operation 30: RENEW - Renew a Lease
+
+16.28.1.  SYNOPSIS
+
+     clientid -> ()
+
+16.28.2.  ARGUMENT
+
+   struct RENEW4args {
+           clientid4       clientid;
+   };
+
+16.28.3.  RESULT
+
+   struct RENEW4res {
+           nfsstat4        status;
+   };
+
+16.28.4.  DESCRIPTION
+
+The RENEW operation is used by the client to renew leases that it currently holds at a server <NULL>.  In processing the RENEW request, the server renews all leases associated with the client <NULL>.  The associated leases are determined by the clientid provided via the SETCLIENTID operation <NULL>.
+
+16.28.5.  IMPLEMENTATION
+
+When the client holds delegations, it needs to use RENEW to detect when the server has determined that the callback path is down <NULL>.  When the server has made such a determination, only the RENEW operation will renew the lease on delegations <NULL>.  If the server determines the callback path is down, it returns NFS4ERR_CB_PATH_DOWN <NULL>.  Even though it returns NFS4ERR_CB_PATH_DOWN, the server MUST renew the lease on the byte-range locks and share reservations that the client has established on the server <NULL>.  If for some reason the lock and share reservation lease cannot be renewed, then the server MUST return an error other than NFS4ERR_CB_PATH_DOWN, even if the callback path is also down <NULL>.  In the event that the server has conditions such that it could return either NFS4ERR_CB_PATH_DOWN or NFS4ERR_LEASE_MOVED, NFS4ERR_LEASE_MOVED MUST be handled first <NULL>.
+
+The client that issues RENEW MUST choose the principal, RPC security flavor, and, if applicable, GSS-API mechanism and service via one of the following algorithms:
+
+o  The client uses the same principal, RPC security flavor, and -- if the flavor was RPCSEC_GSS -- the same mechanism and service that were used when the client ID was established via SETCLIENTID_CONFIRM <NULL>.
+
+o  The client uses any principal, RPC security flavor, mechanism, and service combination that currently has an OPEN file on the server <NULL>. That is, the same principal had a successful OPEN operation; the file is still open by that principal; and the flavor, mechanism, and service of RENEW match that of the previous OPEN <NULL>.
+
+The server MUST reject a RENEW that does not use one of the aforementioned algorithms, with the error NFS4ERR_ACCESS <NULL>.
+
+

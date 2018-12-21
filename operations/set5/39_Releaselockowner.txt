@@ -1,0 +1,30 @@
+16.37.  Operation 39: RELEASE_LOCKOWNER - Release Lock-Owner State
+
+16.37.1.  SYNOPSIS
+
+     lock-owner -> ()
+
+16.37.2.  ARGUMENT
+
+   struct RELEASE_LOCKOWNER4args {
+           lock_owner4     lock_owner;
+   };
+
+16.37.3.  RESULT
+
+   struct RELEASE_LOCKOWNER4res {
+           nfsstat4        status;
+   };
+
+16.37.4.  DESCRIPTION
+
+This operation is used to notify the server that the lock_owner is no longer in use by the client and that future client requests will not reference this lock_owner <NULL>.  This allows the server to release cached state related to the specified lock_owner <NULL>.  If file locks associated with the lock_owner are held at the server, the error NFS4ERR_LOCKS_HELD will be returned and no further action will be taken <NULL>.
+
+16.37.5.  IMPLEMENTATION
+
+The client may choose to use this operation to ease the amount of server state that is held <NULL>.  Information that can be released when a RELEASE_LOCKOWNER is done includes the specified lock-owner string, the seqid associated with the lock-owner, any saved reply for the lock-owner, and any lock stateids associated with that lock-owner <NULL>.
+
+Depending on the behavior of applications at the client, it may be important for the client to use this operation since the server has certain obligations with respect to holding a reference to lock-owner-associated state as long as an associated file is open <NULL>. Therefore, if the client knows for certain that the lock_owner will no longer be used to either reference existing lock stateids associated with the lock-owner or create new ones, it should use RELEASE_LOCKOWNER <NULL>.
+
+
+

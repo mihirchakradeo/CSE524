@@ -1,0 +1,19 @@
+T1	Extrinsic-Pre 1245 1370	if the requester does not have the appropriate access to perform a LOOKUP for the name, then SECINFO must behave the same way
+T2	Assign 1375 1381	return
+E1	Assign:T2 Variable-Arg:T4 Value-Arg:T3
+A1	Server E1
+T3	Value 1382 1396	NFS4ERR_ACCESS
+T4	Variable 1397 1403	<NULL>
+T5	Post 1375 1396	return NFS4ERR_ACCESS
+R1	Transition Arg1:T1 Arg2:T5	
+T6	Equal 2446 2448	On
+E2	Equal:T6 Variable-Arg:T11 Value-Arg:T7
+T7	Value 2449 2456	success
+T8	cfh 2462 2480	current filehandle
+T9	cfh 2493 2498	value
+T10	Equal 2481 2488	retains
+E3	Equal:T10 Variable-Arg:T8 Value-Arg:T9
+T11	Variable 2499 2505	<NULL>
+T12	Post 2462 2498	current filehandle retains its value
+T13	Pre 2446 2456	On success
+R2	Transition Arg1:T13 Arg2:T12	

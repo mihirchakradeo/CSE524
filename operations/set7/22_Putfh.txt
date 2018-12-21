@@ -1,0 +1,33 @@
+16.20.  Operation 22: PUTFH - Set Current Filehandle
+
+16.20.1.  SYNOPSIS
+
+     filehandle -> (cfh)
+
+16.20.2.  ARGUMENT
+
+   struct PUTFH4args {
+           nfs_fh4         object;
+   };
+
+16.20.3.  RESULT
+
+   struct PUTFH4res {
+           /* CURRENT_FH: */
+           nfsstat4        status;
+   };
+
+16.20.4.  DESCRIPTION
+
+PUTFH replaces the current filehandle with the filehandle provided as an argument <NULL>.
+
+If the security mechanism used by the requester does not meet the requirements of the filehandle provided to this operation, the server MUST return NFS4ERR_WRONGSEC <NULL>.
+
+See Section 15.2.4.1 for more details on the current filehandle <NULL>.
+
+16.20.5.  IMPLEMENTATION
+
+PUTFH is commonly used as the first operator in an NFS request to set the context for operations that follow it <NULL>.
+
+
+

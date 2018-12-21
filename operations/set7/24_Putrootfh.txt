@@ -1,0 +1,26 @@
+16.22.  Operation 24: PUTROOTFH - Set Root Filehandle
+
+16.22.1.  SYNOPSIS
+
+     - -> (cfh)
+
+16.22.2.  ARGUMENT
+
+     void;
+
+16.22.3.  RESULT
+
+   struct PUTROOTFH4res {
+           /* CURRENT_FH: root fh */
+           nfsstat4        status;
+   };
+
+16.22.4.  DESCRIPTION
+
+PUTROOTFH replaces the current filehandle with the filehandle that represents the root of the server's namespace <NULL>.  From this filehandle, a LOOKUP operation can locate any other filehandle on the server <NULL>. This filehandle may be different from the public filehandle, which may be associated with some other directory on the server <NULL>.  See Section 15.2.4.1 for more details on the current filehandle <NULL>.
+
+16.22.5.  IMPLEMENTATION
+
+PUTROOTFH is commonly used as the first operator in an NFS request to set the context for operations that follow it <NULL>.
+
+

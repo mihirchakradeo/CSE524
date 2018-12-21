@@ -1,0 +1,53 @@
+16.27.  Operation 29: RENAME - Rename Directory Entry
+
+16.27.1.  SYNOPSIS
+
+     (sfh), oldname, (cfh), newname -> source_cinfo, target_cinfo
+
+16.27.2.  ARGUMENT
+
+   struct RENAME4args {
+           /* SAVED_FH: source directory */
+           component4      oldname;
+           /* CURRENT_FH: target directory */
+           component4      newname;
+   };
+
+16.27.3.  RESULT
+
+   struct RENAME4resok {
+           change_info4    source_cinfo;
+           change_info4    target_cinfo;
+   };
+
+   union RENAME4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            RENAME4resok    resok4;
+    default:
+            void;
+   };
+
+16.27.4.  DESCRIPTION
+
+The RENAME operation renames the object identified by oldname in the source directory corresponding to the saved filehandle, as set by the SAVEFH operation, to newname in the target directory corresponding to the current filehandle <NULL>.  The operation is required to be atomic to the client <NULL>.  Source and target directories must reside on the same file system on the server <NULL>.  On success, the current filehandle will continue to be the target directory <NULL>.
+
+If the target directory already contains an entry with the name newname, the source object must be compatible with the target: either both are non-directories, or both are directories, and the target must be empty <NULL>.  If compatible, the existing target is removed before the rename occurs (see Section 16.26 for client and server actions whenever a target is removed) <NULL>.  If they are not compatible or if the target is a directory but not empty, the server will return the error NFS4ERR_EXIST <NULL>.
+
+If oldname and newname both refer to the same file (they might be hard links of each other), then RENAME should perform no action and return success <NULL>.
+
+For both directories involved in the RENAME, the server returns change_info4 information <NULL>.  With the atomic field of the change_info4 struct, the server will indicate if the before and after change attributes were obtained atomically with respect to the rename <NULL>.
+
+If the oldname refers to a named attribute and the saved and current filehandles refer to the named attribute directories of different file system objects, the server will return NFS4ERR_XDEV, just as if the saved and current filehandles represented directories on different file systems <NULL>.
+
+If the oldname or newname is of zero length, NFS4ERR_INVAL will be returned <NULL>.  The oldname and newname are also subject to the normal UTF-8, character support, and name checks <NULL>.  See Section 12.7 for further discussion <NULL>.
+
+16.27.5.  IMPLEMENTATION
+
+The RENAME operation must be atomic to the client <NULL>.  The statement "source and target directories must reside on the same file system on the server" means that the fsid fields in the attributes for the directories are the same <NULL>.  If they reside on different file systems, the error NFS4ERR_XDEV is returned <NULL>.
+
+Based on the value of the fh_expire_type attribute for the object, the filehandle may or may not expire on a RENAME <NULL>.  However, server implementers are strongly encouraged to attempt to keep filehandles from expiring in this fashion <NULL>.
+
+On some servers, the filenames "." and ".." are illegal as either oldname or newname and will result in the error NFS4ERR_BADNAME <NULL>.  In addition, on many servers the case of oldname or newname being an alias for the source directory will be checked for <NULL>.  Such servers will return the error NFS4ERR_INVAL in these cases <NULL>.
+
+If either of the source or target filehandles are not directories, the server will return NFS4ERR_NOTDIR <NULL>.
+

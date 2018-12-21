@@ -1,0 +1,37 @@
+T1	Value 1827 1834	success
+T2	Variable 1877 1883	<NULL>
+T3	Comparison 1824 1826	On
+E1	Comparison:T3 Value-Arg:T1 Variable-Arg:T2
+T4	cfh 1840 1858	current filehandle
+T5	cfh 1871 1876	value
+T6	Equal 1859 1866	retains
+E2	Equal:T6 Value-Arg:T5 Variable-Arg:T4
+T7	Post 1836 1876	the current filehandle retains its value
+T8	Pre 1824 1834	On success
+T9	OperationName 444 451	SETATTR
+T10	stateid 648 655	stateid
+T11	OperationName 669 676	SETATTR
+T12	OperationName 745 752	SETATTR
+T13	OperationName 932 939	SETATTR
+T15	stateid 1410 1417	stateid
+T16	Variable 1463 1482	file size attribute
+T18	Value 1486 1493	not set
+T17	Equal 1483 1485	is
+E4	Equal:T17 Variable-Arg:T16 Value-Arg:T18
+T19	stateid 1517 1524	stateid
+T20	Assign 1525 1531	MAY be
+E5	Assign:T20 Variable-Arg:T23 Value-Arg:T19
+T21	Pre 1463 1493	file size attribute is not set
+T22	Post 1495 1538	the special anonymous stateid MAY be passed
+T23	Variable 1539 1545	<NULL>
+T24	Value 1558 1565	success
+T25	Value 1569 1576	failure
+T26	Comparison 1548 1550	On
+E6	Comparison:T26 Variable-Arg:T27 Value-Arg:T24
+T27	Variable 1584 1593	operation
+T29	Assign 1611 1617	return
+E8	Assign:T29 Value-Arg:T30 Variable-Arg:T28
+T30	Value 1622 1638	attrsset bitmask
+A2	Server E8
+T28	Variable 1699 1705	<NULL>
+E3	Comparison:T26 Variable-Arg:T27 Value-Arg:T25

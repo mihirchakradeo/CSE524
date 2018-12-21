@@ -1,0 +1,36 @@
+16.29.  Operation 31: RESTOREFH - Restore Saved Filehandle
+
+16.29.1.  SYNOPSIS
+
+     (sfh) -> (cfh)
+
+16.29.2.  ARGUMENT
+
+     /* SAVED_FH: */
+     void;
+
+16.29.3.  RESULT
+
+   struct RESTOREFH4res {
+           /* CURRENT_FH: value of saved fh */
+           nfsstat4        status;
+   };
+
+16.29.4.  DESCRIPTION
+
+Set the current filehandle to the value in the saved filehandle <NULL>.  If there is no saved filehandle, then return the error NFS4ERR_RESTOREFH <NULL>.
+
+16.29.5.  IMPLEMENTATION
+
+Operations like OPEN and LOOKUP use the current filehandle to represent a directory and replace it with a new filehandle <NULL>.  Assuming that the previous filehandle was saved with a SAVEFH operator, the previous filehandle can be restored as the current filehandle <NULL>.  This is commonly used to obtain post-operation attributes for the directory, e.g.,
+
+PUTFH (directory filehandle)
+SAVEFH
+GETATTR attrbits     (pre-op dir attrs)
+CREATE optbits "foo" attrs
+GETATTR attrbits     (file attributes)
+RESTOREFH
+GETATTR attrbits     (post-op dir attrs)
+
+
+

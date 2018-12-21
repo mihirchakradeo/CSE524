@@ -1,0 +1,55 @@
+T1	OperationName 397 405	OPENATTR
+T2	cfh 502 520	current filehandle
+T3	OperationName 548 556	OPENATTR
+T4	Value 599 609	NF4ATTRDIR
+T5	OperationName 641 648	READDIR
+T6	OperationName 653 659	LOOKUP
+T7	Value 873 885	NF4NAMEDATTR
+T8	Pre 1043 1187	Some clients may use the OPENATTR operation with a value of FALSE for createdir to determine if any named attributes exist for the object <NULL>
+T9	OperationName 1068 1076	OPENATTR
+T10	Value 1103 1108	FALSE
+T11	createdir 1113 1122	createdir
+T12	Equal 1087 1102	with a value of
+E1	Equal:T12 Variable-Arg:T11 Value-Arg:T10
+T13	Variable 1143 1159	named attributes
+T14	Comparison 1160 1165	exist
+E2	Comparison:T14 Variable-Arg:T13
+T15	Post 1190 1202	If none exis
+T16	Pre 1190 1203	If none exist
+R1	Transition Arg1:T8 Arg2:T15	
+T17	Post 1205 1247	then NFS4ERR_NOENT will be returned <NULL>
+R2	Transition Arg1:T16 Arg2:T17	
+T18	Value 1193 1197	none
+T19	Comparison 1198 1203	exist
+E3	Comparison:T19 Value-Arg:T18 Variable-Arg:T13
+T20	Value 1210 1223	NFS4ERR_NOENT
+T21	Assign 1232 1240	returned
+E4	Assign:T21 Variable-Arg:T22 Value-Arg:T20
+T22	Variable 1241 1247	<NULL>
+T23	Pre 1250 1282	If createdir has a value of TRUE
+T24	Post 1283 1322	and no named attribute directory exists
+T25	Pre 1283 1322	and no named attribute directory exists
+T26	Post 1324 1345	one is created <NULL>
+R3	Transition Arg1:T23 Arg2:T24	
+R4	Transition Arg1:T25 Arg2:T26	
+T27	Value 1278 1282	TRUE
+T28	createdir 1253 1262	createdir
+T29	Equal 1263 1277	has a value of
+E5	Equal:T29 Value-Arg:T27 Variable-Arg:T28
+T30	Variable 1290 1305	named attribute
+T31	Comparison 1316 1322	exists
+E6	Comparison:T31 Value-Arg:T32 Variable-Arg:T30
+T32	Value 1316 1322	exists
+A1	Negation E6
+T33	Pre 1555 1629	If the server does not support named attributes for the current filehandle
+T34	Post 1631 1696	an error of NFS4ERR_NOTSUPP will be returned to the client <NULL>
+R5	Transition Arg1:T33 Arg2:T34	
+T35	Value 1643 1658	NFS4ERR_NOTSUPP
+T36	Assign 1667 1675	returned
+E7	Assign:T36 Variable-Arg:T37 Value-Arg:T35
+T37	Variable 1690 1696	<NULL>
+T38	cfh 1611 1629	current filehandle
+T39	Value 1586 1602	named attributes
+T40	Comparison 1569 1585	does not support
+E8	Comparison:T40 Value-Arg:T39 Variable-Arg:T38
+A2	Negation E8

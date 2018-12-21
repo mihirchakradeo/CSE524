@@ -1,0 +1,37 @@
+16.25.  Operation 27: READLINK - Read Symbolic Link
+
+16.25.1.  SYNOPSIS
+
+     (cfh) -> linktext
+
+16.25.2.  ARGUMENT
+
+     /* CURRENT_FH: symlink */
+     void;
+
+16.25.3.  RESULT
+
+   struct READLINK4resok {
+           linktext4       link;
+   };
+
+   union READLINK4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            READLINK4resok resok4;
+    default:
+            void;
+   };
+
+16.25.4.  DESCRIPTION
+
+READLINK reads the data associated with a symbolic link <NULL>.  The data is a UTF-8 string that is opaque to the server <NULL>.  That is, whether created by an NFS client or created locally on the server, the data in a symbolic link is not interpreted when created but is simply stored <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.25.5.  IMPLEMENTATION
+
+A symbolic link is nominally a pointer to another file <NULL>.  The data is not necessarily interpreted by the server; it is just stored in the file <NULL>.  It is possible for a client implementation to store a pathname that is not meaningful to the server operating system in a symbolic link <NULL>.  A READLINK operation returns the data to the client for interpretation <NULL>.  If different implementations want to share access to symbolic links, then they must agree on the interpretation of the data in the symbolic link <NULL>.
+
+The READLINK operation is only allowed on objects of type NF4LNK <NULL>. The server should return the error NFS4ERR_INVAL if the object is not of type NF4LNK <NULL>.
+
+

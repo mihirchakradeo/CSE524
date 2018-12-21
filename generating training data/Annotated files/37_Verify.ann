@@ -1,0 +1,19 @@
+T1	OperationName 339 345	VERIFY
+T2	Pre 503 540	If any of the attributes do not match
+T3	fattr 517 527	attributes
+T4	Post 542 590	then the error NFS4ERR_NOT_SAME must be returned
+R1	Transition Arg1:T2 Arg2:T4	
+T5	Equal 528 540	do not match
+E1	Equal:T5 Value-Arg:T3 Variable-Arg:T3
+A1	Negation E1
+T6	Value 557 573	NFS4ERR_NOT_SAME
+T7	Equal 574 590	must be returned
+E2	Equal:T7 Variable-Arg:T8 Value-Arg:T6
+T8	Variable 591 598	<NULL>.
+T9	cfh 604 622	current filehandle
+T10	Equal 623 630	retains
+E3	Equal:T10 Variable-Arg:T9 Value-Arg:T11
+T11	cfh 631 640	its value
+T12	Pre 647 685	successful completion of the operation
+T13	Post 600 640	The current filehandle retains its value
+R2	Transition Arg1:T12 Arg2:T13	

@@ -1,0 +1,15 @@
+T1	OperationName 476 487	SETCLIENTID
+T2	OperationName 545 556	SETCLIENTID
+T3	Value 630 637	success
+T4	Value 641 648	failure
+T5	Variable 649 655	<NULL>
+T6	Assign 597 605	responds
+E1	Assign:T6 Value-Arg:T4 Variable-Arg:T5
+E2	Assign:T6 Value-Arg:T3 Variable-Arg:T5
+A1	server E1
+A2	server E2
+T7	Assign 508 516	provides
+E3	Assign:T7 Variable-Arg:T8 Value-Arg:T9
+A3	client E3
+T8	clientid 567 576	client ID
+T9	Value 577 583	<NULL>

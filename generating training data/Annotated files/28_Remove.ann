@@ -1,0 +1,30 @@
+T1	OperationName 489 495	REMOVE
+T2	filename 551 559	filename
+T3	cfh 600 618	current filehandle
+T4	Extrinsic-Pre 627 720	If the entry in the directory was the last reference to the corresponding file system object,
+T5	Extrinsic-Post 721 748	the object may be destroyed
+R1	Transition Arg1:T4 Arg2:T5	
+T6	filename 786 794	filename
+T7	change_info 855 860	cinfo
+T8	Pre 1049 1080	If the target is of zero length
+T9	Variable 1056 1062	target
+T10	Value 1069 1080	zero length
+T11	Equal 1063 1068	is of
+E1	Equal:T11 Variable-Arg:T9 Value-Arg:T10
+T12	Post 1082 1112	NFS4ERR_INVAL will be returned
+R2	Transition Arg1:T8 Arg2:T12	
+T13	Value 1082 1095	NFS4ERR_INVAL
+T14	Equal 1096 1112	will be returned
+E2	Equal:T14 Variable-Arg:T15 Value-Arg:T13
+T15	Variable 1113 1119	<NULL>
+T16	Pre 1263 1273	On success
+T17	Post 1275 1315	the current filehandle retains its value
+T18	Value 1266 1273	success
+T19	Equal 1263 1265	On
+E3	Equal:T19 Value-Arg:T18 Variable-Arg:T20
+T20	Variable 1316 1322	<NULL>
+R3	Transition Arg1:T16 Arg2:T17	
+T21	cfh 1279 1297	current filehandle
+T22	Equal 1298 1305	retains
+E4	Equal:T22 Value-Arg:T23 Variable-Arg:T21
+T23	cfh 1306 1315	its value

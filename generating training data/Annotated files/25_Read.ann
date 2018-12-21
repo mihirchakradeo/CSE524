@@ -1,0 +1,145 @@
+T1	OperationName 580 584	READ
+T2	cfh 646 664	current filehandle
+T3	offset 697 703	offset
+T4	OperationName 717 721	READ
+T5	count 740 745	count
+T6	Pre 788 809	An offset of 0 (zero)
+T7	Post 810 873	means to read data starting at the beginning of the file <NULL>
+R1	Transition Arg1:T6 Arg2:T7	
+T8	Value 801 809	0 (zero)
+T9	offset 791 797	offset
+T10	Equal 798 800	of
+E1	Equal:T10 Value-Arg:T8 Variable-Arg:T9
+T11	data 824 828	data
+T12	Value 845 866	beginning of the file
+T13	Comparison 829 840	starting at
+E2	Comparison:T13 Variable-Arg:T11 Value-Arg:T12
+T14	Pre 876 938	If the offset is greater than or equal to the size of the file
+T15	Post 940 972	the status, NFS4_OK, is returned
+T16	Pre 940 972	the status, NFS4_OK, is returned
+T17	Post 973 1007	with a data length set to 0 (zero)
+T18	Post 1009 1038	and eof is set to TRUE <NULL>
+R2	Transition Arg1:T16 Arg2:T17	
+T19	Pre 973 1007	with a data length set to 0 (zero)
+R3	Transition Arg1:T19 Arg2:T18	
+R4	Transition Arg1:T14 Arg2:T15	
+T20	offset 883 889	offset
+T21	cfh 922 938	size of the file
+A1	Length T21
+T22	GreaterEqual 893 917	greater than or equal to
+E3	GreaterEqual:T22 Value-Arg:T21 Variable-Arg:T20
+T23	Value 952 959	NFS4_OK
+T25	Assign 964 972	returned
+E4	Assign:T25 Value-Arg:T23 Variable-Arg:T26
+T26	Variable 944 950	status
+T24	data 980 991	data length
+A2	Length T24
+T27	Value 999 1007	0 (zero)
+T28	Equal 992 998	set to
+E5	Equal:T28 Value-Arg:T27 Variable-Arg:T24
+T29	eof 1013 1016	eof
+T30	Value 1027 1031	TRUE
+T31	Equal 1020 1026	set to
+E6	Equal:T31 Value-Arg:T30 Variable-Arg:T29
+T32	OperationName 1045 1049	READ
+T33	Pre 1101 1150	If the client specifies a count value of 0 (zero)
+T34	Post 1152 1169	the READ succeeds
+T35	Pre 1152 1169	the READ succeeds
+R5	Transition Arg1:T33 Arg2:T34	
+T36	Post 1170 1252	and returns 0 (zero) bytes of data (subject to access permissions checking) <NULL>
+R6	Transition Arg1:T35 Arg2:T36	
+T37	Value 1142 1150	0 (zero)
+T38	count 1127 1132	count
+T39	Equal 1139 1141	of
+E7	Equal:T39 Value-Arg:T37 Variable-Arg:T38
+A3	Client E7
+T40	OperationName 1156 1160	READ
+T41	Assign 1174 1181	returns
+E8	Assign:T41 Value-Arg:T42 Variable-Arg:T43
+T42	Value 1182 1196	0 (zero) bytes
+T43	data 1200 1204	data
+T44	stateid 1434 1441	stateid
+T45	OperationName 1454 1458	READ
+T46	stateid 1564 1571	stateid
+T47	stateid 1614 1621	stateid
+T48	Post 2037 2060	eof is returned as TRUE
+T49	Post 2062 2091	otherwise, it is FALSE <NULL>
+T50	Pre 1786 1921	If the READ ended at the end-of-file (formally, in a correctly formed READ request, if offset + count is equal to the size of the file)
+T51	Pre 1927 2035	he READ request extends beyond the size of the file (if offset + count is greater than the size of the file)
+T52	OperationName 1793 1797	READ
+T53	eof 1811 1822	end-of-file
+T54	offset 1873 1879	offset
+T55	count 1882 1887	count
+T56	cfh 1904 1920	size of the file
+A4	Length T56
+T57	Equal 1891 1896	equal
+E9	Equal:T57 Value-Arg:T56 Variable-Arg:T58
+T58	Variable 1873 1887	offset + count
+T59	cfh 2014 2034	the size of the file
+A5	Length T59
+T60	count 1992 1997	count
+T61	offset 1983 1989	offset
+T62	Variable 1983 1997	offset + count
+T63	Greater 1998 2013	is greater than
+E10	Greater:T63 Value-Arg:T59 Variable-Arg:T62
+R7	Transition Arg1:T50 Arg2:T48	
+R8	Transition Arg1:T51 Arg2:T49	
+T64	Pre 2094 2128	A successful READ of an empty file
+T65	Post 2129 2166	will always return eof as TRUE <NULL>
+T66	eof 2148 2151	eof
+T67	Value 2155 2159	TRUE
+T68	Equal 2152 2154	as
+E11	Equal:T68 Value-Arg:T67 Variable-Arg:T66
+T69	OperationName 2107 2111	READ
+R9	Transition Arg1:T64 Arg2:T65	
+T70	Value 2096 2106	successful
+T71	Comparison 2094 2095	A
+E12	Comparison:T71 Variable-Arg:T69 Value-Arg:T70
+T72	Pre 2169 2216	If the current filehandle is not a regular file
+T73	Post 2218 2264	an error will be returned to the client <NULL>
+T74	cfh 2176 2194	current filehandle
+T75	Value 2204 2216	regular file
+T76	Equal 2195 2203	is not a
+E13	Equal:T76 Value-Arg:T75 Variable-Arg:T74
+A6	Negation E13
+R10	Transition Arg1:T72 Arg2:T73	
+T77	Assign 2235 2243	returned
+E14	Assign:T77 Variable-Arg:T78 Value-Arg:T79
+T78	Variable 2258 2264	<NULL>
+T79	Value 2221 2226	error
+T80	Pre 2267 2330	In the case where the current filehandle represents a directory
+T81	Post 2332 2357	NFS4ERR_ISDIR is returned
+T82	Post 2359 2402	otherwise, NFS4ERR_INVAL is returned <NULL>
+R11	Transition Arg1:T80 Arg2:T81	
+R12	Transition Arg1:T80 Arg2:T82	
+T83	Value 2332 2345	NFS4ERR_ISDIR
+T84	Assign 2349 2357	returned
+E15	Assign:T84 Value-Arg:T83 Variable-Arg:T85
+T85	Variable 2396 2402	<NULL>
+T86	cfh 2289 2307	current filehandle
+T87	Variable 2319 2330	a directory
+T88	Comparison 2308 2318	represents
+E16	Comparison:T88 Value-Arg:T87 Variable-Arg:T86
+T89	Value 2370 2383	NFS4ERR_INVAL
+T90	Assign 2387 2395	returned
+E17	Assign:T90 Value-Arg:T89 Variable-Arg:T85
+T91	Pre 2719 2729	On success
+T92	Post 2731 2778	the current filehandle retains its value <NULL>
+R13	Transition Arg1:T91 Arg2:T92	
+T93	Value 2722 2729	success
+T94	Comparison 2719 2721	On
+E18	Comparison:T94 Value-Arg:T93 Variable-Arg:T95
+T95	Variable 2772 2778	<NULL>
+T96	cfh 2735 2753	current filehandle
+T97	cfh 2766 2771	value
+T98	Equal 2754 2761	retains
+E19	Equal:T98 Value-Arg:T97 Variable-Arg:T96
+T99	Pre 2807 2900	If the server returns a "short read" (i.e., less data than requested and eof is set to FALSE)
+T100	Post 2902 2970	the client should send another READ to get the remaining data <NULL>
+R14	Transition Arg1:T99 Arg2:T100	
+T101	Variable 2831 2842	"short read
+T102	OperationName 2933 2937	READ
+T103	eof 2880 2883	eof
+T104	Value 2894 2899	FALSE
+T105	Equal 2887 2893	set to
+E20	Equal:T105 Value-Arg:T104 Variable-Arg:T103

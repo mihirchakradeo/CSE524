@@ -1,0 +1,13 @@
+T1	OperationName 724 735	SETCLIENTID
+T2	Pre 966 992	Upon successful completion
+T3	Extrinsic-Post 993 1140	the server will return a shorthand client ID that, if confirmed via a separate step, will be used in subsequent file locking and file open requests
+R1	Transition Arg1:T2 Arg2:T3	
+T4	OperationName 1201 1220	SETCLIENTID_CONFIRM
+T5	OperationName 1382 1393	SETCLIENTID
+T6	OperationName 1398 1417	SETCLIENTID_CONFIRM
+T7	OperationName 1847 1858	SETCLIENTID
+T8	callback_ident 1880 1894	callback_ident
+T9	callback_ident 1976 1990	callback_ident
+T10	client 804 821	client identifier
+T11	callback 823 831	callback
+T12	callback_ident 837 851	callback_ident

@@ -1,0 +1,58 @@
+T1	cfh 311 329	current filehandle
+T2	OperationName 413 420	LOOKUPP
+T3	cfh 479 497	current filehandle
+T4	Value 433 468	filehandle for its parent directory
+T5	Equal 421 428	assigns
+E1	Equal:T5 Value-Arg:T4 Variable-Arg:T3
+T6	Pre 413 420	LOOKUPP
+T7	Post 421 497	assigns the filehandle for its parent directory to be the current filehandle
+R1	Transition Arg1:T6 Arg2:T7	
+T8	Pre 507 538	If there is no parent directory
+T9	Post 540 579	an NFS4ERR_NOENT error must be returned
+R2	Transition Arg1:T8 Arg2:T9	
+T10	Value 543 556	NFS4ERR_NOENT
+T11	Assign 571 579	returned
+E2	Assign:T11 Variable-Arg:T12 Value-Arg:T10
+T12	Variable 580 586	<NULL>
+T13	Value 522 538	parent directory
+T14	Comparison 510 521	there is no
+E3	Comparison:T14 Value-Arg:T13 Variable-Arg:T12
+A1	Negation E3
+T15	Post 589 644	Therefore, NFS4ERR_NOENT will be returned by the server
+T16	Pre 645 720	when the current filehandle is at the root or top of the server's file tree
+T17	Value 600 613	NFS4ERR_NOENT
+R3	Transition Arg1:T16 Arg2:T15	
+T18	Assign 622 630	returned
+E4	Assign:T18 Value-Arg:T17 Variable-Arg:T19
+A2	Server E4
+T19	Variable 721 727	<NULL>
+T20	cfh 654 672	current filehandle
+T21	Value 676 720	at the root or top of the server's file tree
+T22	Comparison 673 675	is
+E5	Comparison:T22 Variable-Arg:T20 Value-Arg:T21
+T23	OperationName 763 769	LOOKUP
+T24	OperationName 771 778	LOOKUPP
+T25	cfh 824 842	current filehandle
+T26	Value 902 916	NFS4ERR_NOTDIR
+T27	Variable 929 935	<NULL>
+T28	Assign 920 928	returned
+E6	Assign:T28 Variable-Arg:T27 Value-Arg:T26
+T29	Post 893 928	he error NFS4ERR_NOTDIR is returned
+T30	Pre 817 890	If the current filehandle is not a directory or named attribute directory
+R4	Transition Arg1:T30 Arg2:T29	
+T31	Value 846 861	not a directory
+T32	Value 865 890	named attribute directory
+T33	Comparison 843 845	is
+E7	Comparison:T33 Value-Arg:T31 Variable-Arg:T25
+A3	Negation E7
+E8	Comparison:T33 Value-Arg:T32 Variable-Arg:T25
+A4	Negation E8
+T34	cfh 945 963	current filehandle
+T35	OperationName 1112 1119	LOOKUPP
+T36	Extrinsic-Pre 938 1110	If the current filehandle is a named attribute directory that is associated with a file system object via OPENATTR (i.e., not a subdirectory of a named attribute directory)
+T37	Post 1112 1185	LOOKUPP SHOULD return the filehandle of the associated file system object
+T38	Assign 1127 1133	return
+E9	Assign:T38 Variable-Arg:T39 Value-Arg:T40
+T39	Variable 1186 1192	<NULL>
+T40	Value 1138 1184	filehandle of the associated file system objec
+T41	OperationName 1044 1052	OPENATTR

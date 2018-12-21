@@ -1,0 +1,24 @@
+16.6.  Operation 8: DELEGRETURN - Return Delegation
+
+16.6.1.  SYNOPSIS
+
+     (cfh), stateid ->
+
+16.6.2.  ARGUMENT
+
+   struct DELEGRETURN4args {
+           /* CURRENT_FH: delegated file */
+           stateid4        deleg_stateid;
+   };
+
+16.6.3.  RESULT
+
+   struct DELEGRETURN4res {
+           nfsstat4        status;
+   };
+
+16.6.4.  DESCRIPTION
+
+DELEGRETURN returns the delegation represented by the current filehandle and stateid <NULL>.
+
+Delegations may be returned when recalled or voluntarily (i.e., before the server has recalled them).  In either case, the client must properly propagate state changed under the context of the delegation to the server before returning the delegation <NULL>.

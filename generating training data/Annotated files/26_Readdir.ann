@@ -1,0 +1,37 @@
+T1	OperationName 1012 1019	READDIR
+T2	OperationName 1270 1277	READDIR
+T3	OperationName 1350 1357	READDIR
+T4	cookie 1311 1317	cookie
+T5	Equal 1329 1339	represents
+E1	Equal:T5 Value-Arg:T6 Variable-Arg:T4
+T6	Value 1340 1391	where the READDIR should start within the directory
+T7	Value 1412 1420	0 (zero)
+T8	cookie 1429 1435	cookie
+T9	Equal 1401 1411	A value of
+E2	Equal:T9 Value-Arg:T7 Variable-Arg:T8
+T10	Pre 1401 1435	A value of 0 (zero) for the cookie
+T11	Post 1447 1494	start reading at the beginning of the directory
+R1	Transition Arg1:T10 Arg2:T11	
+T12	OperationName 1519 1526	READDIR
+T13	OperationName 1618 1625	READDIR
+T14	Assign 1548 1557	specifies
+E3	Assign:T14 Variable-Arg:T15 Value-Arg:T16
+T15	Variable 1558 1572	a cookie value
+A1	client E3
+T16	Value 1581 1633	provided by the server in a previous READDIR request
+T17	Pre 1690 1746	when the cookie value is 0 (zero) (first directory read)
+T18	Post 1643 1689	The cookieverf value should be set to 0 (zero)
+R2	Transition Arg1:T17 Arg2:T18	
+T19	Extrinsic-Pre 1938 2020	If the server determines that the cookieverf is no longer valid for the directory,
+T20	Post 2021 2064	the error NFS4ERR_NOT_SAME must be returned
+R3	Transition Arg1:T19 Arg2:T20	
+T21	cookieverf 1972 1982	cookieverf
+T22	Equal 1983 1995	is no longer
+E4	Equal:T22 Variable-Arg:T21 Value-Arg:T23
+A2	Negation E4
+T23	Value 1996 2001	valid
+T24	Value 2031 2047	NFS4ERR_NOT_SAME
+T25	Equal 2048 2064	must be returned
+E5	Equal:T25 Variable-Arg:T26 Value-Arg:T24
+T26	Variable 2065 2071	<NULL>
+T27	OperationName 1888 1895	READDIR

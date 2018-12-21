@@ -1,0 +1,8 @@
+T1	OperationName 270 279	PUTROOTFH
+T2	cfh 293 311	current filehandle
+T3	Variable 321 382	filehandle that represents the root of the server's namespace
+T4	Post 280 389	replaces the current filehandle with the filehandle that represents the root of the server's namespace <NULL>
+T5	Pre 270 279	PUTROOTFH
+R1	Transition Arg1:T5 Arg2:T4	
+T6	Assign 280 288	replaces
+E1	Assign:T6 Variable-Arg:T2 Value-Arg:T3

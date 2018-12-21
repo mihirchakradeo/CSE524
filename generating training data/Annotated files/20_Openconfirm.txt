@@ -1,0 +1,48 @@
+16.18.  Operation 20: OPEN_CONFIRM - Confirm Open
+
+16.18.1.  SYNOPSIS
+
+     (cfh), seqid, stateid -> stateid
+
+16.18.2.  ARGUMENT
+
+   struct OPEN_CONFIRM4args {
+           /* CURRENT_FH: opened file */
+           stateid4        open_stateid;
+           seqid4          seqid;
+   };
+
+16.18.3.  RESULT
+
+   struct OPEN_CONFIRM4resok {
+           stateid4        open_stateid;
+   };
+
+   union OPEN_CONFIRM4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            OPEN_CONFIRM4resok     resok4;
+    default:
+            void;
+   };
+
+16.18.4.  DESCRIPTION
+
+This operation is used to confirm the sequence id usage for the first time that an open-owner is used by a client <NULL>.  The stateid returned from the OPEN operation is used as the argument for this operation along with the next sequence id for the open-owner <NULL>.  The sequence id passed to the OPEN_CONFIRM must be 1 (one) greater than the seqid passed to the OPEN operation (Section 9.1.4) <NULL>.  If the server receives an unexpected sequence id with respect to the original OPEN, then the server assumes that the client will not confirm the original OPEN and all state associated with the original OPEN is released by the server <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.18.5.  IMPLEMENTATION
+
+A given client might generate many open_owner4 data structures for a given client ID <NULL>.  The client will periodically either dispose of its open_owner4s or stop using them for indefinite periods of time <NULL>.  The latter situation is why the NFSv4 protocol does not have an explicit operation to exit an open_owner4: such an operation is of no use in that situation <NULL>.  Instead, to avoid unbounded memory use, the server needs to implement a strategy for disposing of open_owner4s that have no current open state for any files and have not been used recently <NULL>. The time period used to determine when to dispose of open_owner4s is an implementation choice <NULL>.  The time period should certainly be no less than the lease time plus any grace period the server wishes to implement beyond a lease time <NULL>.  The OPEN_CONFIRM operation allows the server to safely dispose of unused open_owner4 data structures <NULL>.
+
+In the case that a client issues an OPEN operation and the server no longer has a record of the open_owner4, the server needs to ensure that this is a new OPEN and not a replay or retransmission <NULL>.
+
+Servers MUST NOT require confirmation on OPENs that grant delegations or are doing reclaim operations <NULL>.  See Section 9.1.11 for details <NULL>. The server can easily avoid this by noting whether it has disposed of one open_owner4 for the given client ID <NULL>.  If the server does not support delegation, it might simply maintain a single bit that notes whether any open_owner4 (for any client) has been disposed of <NULL>.
+
+The server must hold unconfirmed OPEN state until one of three events occurs <NULL>.  First, the client sends an OPEN_CONFIRM request with the appropriate sequence id and stateid within the lease period <NULL>.  In this case, the OPEN state on the server goes to confirmed, and the open_owner4 on the server is fully established <NULL>.
+
+Second, the client sends another OPEN request with a sequence id that is incorrect for the open_owner4 (out of sequence) <NULL>.  In this case, the server assumes the second OPEN request is valid and the first one is a replay <NULL>.  The server cancels the OPEN state of the first OPEN request, establishes an unconfirmed OPEN state for the second OPEN request, and responds to the second OPEN request with an indication that an OPEN_CONFIRM is needed <NULL>.  The process then repeats itself <NULL>. While there is a potential for a denial-of-service attack on the client, it is mitigated if the client and server require the use of a security flavor based on Kerberos V5 or some other flavor that uses cryptography <NULL>.
+
+What if the server is in the unconfirmed OPEN state for a given open_owner4, and it receives an operation on the open_owner4 that has a stateid but the operation is not OPEN, or it is OPEN_CONFIRM but with the wrong stateid <NULL>?  Then, even if the seqid is correct, the server returns NFS4ERR_BAD_STATEID, because the server assumes the operation is a replay: if the server has no established OPEN state, then there is no way, for example, a LOCK operation could be valid <NULL>.
+
+Third, neither of the two aforementioned events occurs for the open_owner4 within the lease period <NULL>.  In this case, the OPEN state is canceled and disposal of the open_owner4 can occur <NULL>.

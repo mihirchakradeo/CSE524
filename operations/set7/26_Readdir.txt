@@ -1,0 +1,90 @@
+16.24.  Operation 26: READDIR - Read Directory
+
+16.24.1.  SYNOPSIS
+
+     (cfh), cookie, cookieverf, dircount, maxcount, attr_request ->
+     cookieverf { cookie, name, attrs }
+
+16.24.2.  ARGUMENT
+
+   struct READDIR4args {
+           /* CURRENT_FH: directory */
+           nfs_cookie4     cookie;
+           verifier4       cookieverf;
+           count4          dircount;
+           count4          maxcount;
+           bitmap4         attr_request;
+   };
+
+16.24.3.  RESULT
+
+   struct entry4 {
+           nfs_cookie4     cookie;
+           component4      name;
+           fattr4          attrs;
+           entry4          *nextentry;
+   };
+
+   struct dirlist4 {
+           entry4          *entries;
+           bool            eof;
+   };
+
+   struct READDIR4resok {
+           verifier4       cookieverf;
+           dirlist4        reply;
+   };
+
+   union READDIR4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            READDIR4resok  resok4;
+    default:
+            void;
+   };
+
+
+16.24.4.  DESCRIPTION
+
+The READDIR operation retrieves a variable number of entries from a file system directory and for each entry returns attributes that were requested by the client, along with information to allow the client to request additional directory entries in a subsequent READDIR <NULL>.
+
+The arguments contain a cookie value that represents where the READDIR should start within the directory <NULL>.  A value of 0 (zero) for the cookie is used to start reading at the beginning of the directory <NULL>.  For subsequent READDIR requests, the client specifies a cookie value that is provided by the server in a previous READDIR request <NULL>.
+
+The cookieverf value should be set to 0 (zero) when the cookie value is 0 (zero) (first directory read) <NULL>.  On subsequent requests, it should be a cookieverf as returned by the server <NULL>.  The cookieverf must match that returned by the READDIR in which the cookie was acquired <NULL>.  If the server determines that the cookieverf is no longer valid for the directory, the error NFS4ERR_NOT_SAME must be returned <NULL>.
+
+The dircount portion of the argument is a hint of the maximum number of bytes of directory information that should be returned <NULL>.  This value represents the length of the names of the directory entries and the cookie value for these entries <NULL>.  This length represents the XDR encoding of the data (names and cookies) and not the length in the native format of the server <NULL>.
+
+The maxcount value of the argument is the maximum number of bytes for the result <NULL>.  This maximum size represents all of the data being returned within the READDIR4resok structure and includes the XDR overhead <NULL>.  The server may return less data <NULL>.  If the server is unable to return a single directory entry within the maxcount limit, the error NFS4ERR_TOOSMALL will be returned to the client <NULL>.
+
+Finally, attr_request represents the list of attributes to be returned for each directory entry supplied by the server <NULL>.
+
+On successful return, the server's response will provide a list of directory entries <NULL>.  Each of these entries contains the name of the directory entry, a cookie value for that entry, and the associated attributes as requested <NULL>.  The "eof" flag has a value of TRUE if there are no more entries in the directory <NULL>.
+
+The cookie value is only meaningful to the server and is used as a "bookmark" for the directory entry <NULL>.  As mentioned, this cookie is used by the client for subsequent READDIR operations so that it may continue reading a directory <NULL>.  The cookie is similar in concept to a READ offset but should not be interpreted as such by the client <NULL>.  The server SHOULD try to accept cookie values issued with READDIR responses even if the directory has been modified between the READDIR calls but MAY return NFS4ERR_NOT_VALID if this is not possible, as might be the case if the server has rebooted in the interim <NULL>.
+
+In some cases, the server may encounter an error while obtaining the attributes for a directory entry <NULL>.  Instead of returning an error for the entire READDIR operation, the server can instead return the attribute 'fattr4_rdattr_error' <NULL>.  With this, the server is able to communicate the failure to the client and not fail the entire operation in the instance of what might be a transient failure <NULL>. Obviously, the client must request the fattr4_rdattr_error attribute for this method to work properly <NULL>.  If the client does not request the attribute, the server has no choice but to return failure for the entire READDIR operation <NULL>.
+
+For some file system environments, the directory entries "." and ".." have special meaning, and in other environments, they may not <NULL>.  If the server supports these special entries within a directory, they should not be returned to the client as part of the READDIR response <NULL>. To enable some client environments, the cookie values of 0, 1, and 2 are to be considered reserved <NULL>.  Note that the UNIX client will use these values when combining the server's response and local representations to enable a fully formed UNIX directory presentation to the application <NULL>.
+
+For READDIR arguments, cookie values of 1 and 2 SHOULD NOT be used, and for READDIR results, cookie values of 0, 1, and 2 MUST NOT be returned <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+16.24.5.  IMPLEMENTATION
+
+The server's file system directory representations can differ greatly <NULL>.  A client's programming interfaces may also be bound to the local operating environment in a way that does not translate well into the NFS protocol <NULL>.  Therefore, the dircount and maxcount fields are provided to allow the client the ability to provide guidelines to the server <NULL>.  If the client is aggressive about attribute collection during a READDIR, the server has an idea of how to limit the encoded response <NULL>.  The dircount field provides a hint on the number of entries based solely on the names of the directory entries <NULL>.  Since it is a hint, it may be possible that a dircount value is zero <NULL>.  In this case, the server is free to ignore the dircount value and return directory information based on the specified maxcount value <NULL>.
+
+As there is no way for the client to indicate that a cookie value, once received, will not be subsequently used, server implementations should avoid schemes that allocate memory corresponding to a returned cookie <NULL>.  Such allocation can be avoided if the server bases cookie values on a value such as the offset within the directory where the scan is to be resumed <NULL>.
+
+Cookies generated by such techniques should be designed to remain valid despite modification of the associated directory <NULL>.  If a server were to invalidate a cookie because of a directory modification, READDIRs of large directories might never finish <NULL>.
+
+If a directory is deleted after the client has carried out one or more READDIR operations on the directory, the cookies returned will become invalid; however, the server does not need to be concerned, as the directory filehandle used previously would have become stale and would be reported as such on subsequent READDIR operations <NULL>.  The server would not need to check the cookie verifier in this case <NULL>.
+
+However, certain reorganization operations on a directory (including directory compaction) may invalidate READDIR cookies previously given out <NULL>.  When such a situation occurs, the server should modify the cookie verifier so as to disallow the use of cookies that would otherwise no longer be valid <NULL>.
+
+The cookieverf may be used by the server to help manage cookie values that may become stale <NULL>.  It should be a rare occurrence that a server is unable to continue properly reading a directory with the provided cookie/cookieverf pair <NULL>.  The server should make every effort to avoid this condition since the application at the client may not be able to properly handle this type of failure <NULL>.
+
+The use of the cookieverf will also protect the client from using READDIR cookie values that may be stale <NULL>.  For example, if the file system has been migrated, the server may or may not be able to use the same cookie values to service READDIR as the previous server used <NULL>.  With the client providing the cookieverf, the server is able to provide the appropriate response to the client <NULL>.  This prevents the case where the server may accept a cookie value but the underlying directory has changed and the response is invalid from the client's context of its previous READDIR <NULL>.
+
+Since some servers will not be returning "." and ".." entries as has been done with previous versions of the NFS protocol, the client that requires these entries be present in READDIR responses must fabricate them <NULL>.
+
+

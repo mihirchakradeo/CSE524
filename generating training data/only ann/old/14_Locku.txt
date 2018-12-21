@@ -1,0 +1,42 @@
+16.12.  Operation 14: LOCKU - Unlock File
+
+16.12.1.  SYNOPSIS
+
+     (cfh) type, seqid, stateid, offset, length -> stateid
+
+16.12.2.  ARGUMENT
+
+   struct LOCKU4args {
+           /* CURRENT_FH: file */
+           nfs_lock_type4  locktype;
+           seqid4          seqid;
+           stateid4        lock_stateid;
+           offset4         offset;
+           length4         length;
+   };
+
+16.12.3.  RESULT
+
+   union LOCKU4res switch (nfsstat4 status) {
+    case NFS4_OK:
+            stateid4       lock_stateid;
+    default:
+            void;
+   };
+
+16.12.4.  DESCRIPTION
+
+The LOCKU operation unlocks the byte-range lock specified by the parameters <NULL>.  The client may set the locktype field to any value that is legal for the nfs_lock_type4 enumerated type, and the server MUST accept any legal value for locktype <NULL>.  Any legal value for locktype has no effect on the success or failure of the LOCKU operation <NULL>.
+
+The ranges are specified as for LOCK <NULL>.  The NFS4ERR_INVAL and NFS4ERR_BAD_RANGE errors are returned under the same circumstances as  for LOCK <NULL>.
+
+On success, the current filehandle retains its value <NULL>.
+
+
+16.12.5.  IMPLEMENTATION
+
+If the area to be unlocked does not correspond exactly to a lock actually held by the lock-owner, the server may return the error NFS4ERR_LOCK_RANGE <NULL>.  This includes the cases where (1) the area is not locked, (2) the area is a sub-range of the area locked, (3) it overlaps the area locked without matching exactly, or (4) the area specified includes multiple locks held by the lock-owner <NULL>.  In all of these cases, allowed by POSIX locking [fcntl] semantics, a client receiving this error should, if it desires support for such operations, simulate the operation using LOCKU on ranges corresponding to locks it actually holds, possibly followed by LOCK requests for the sub-ranges not being unlocked <NULL>.
+
+When a client holds an OPEN_DELEGATE_WRITE delegation, it may choose (see Section 16.10.5) to handle LOCK requests locally <NULL>.  In such a case, LOCKU requests will similarly be handled locally <NULL>.
+
+

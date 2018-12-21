@@ -1,0 +1,162 @@
+T1	OperationName 653 659	RENAME
+T2	OperationName 788 794	SAVEFH
+T3	sfh 756 772	saved filehandle
+T4	cfh 862 880	current filehandle
+T5	newname 809 816	newname
+T6	source_cinfo 952 958	Source
+T7	target_cinfo 963 981	target directories
+T8	Comparison 987 1017	reside on the same file system
+E1	Comparison:T8 Value-Arg:T7 Variable-Arg:T6
+A1	Server E1
+T9	Pre 1041 1051	On success
+T10	Post 1053 1123	the current filehandle will continue to be the target directory <NULL>
+R1	Transition Arg1:T9 Arg2:T10	
+T11	Variable 1117 1123	<NULL>
+T12	Value 1044 1051	success
+T13	Equal 1041 1043	On
+E2	Equal:T13 Value-Arg:T12 Variable-Arg:T11
+T14	cfh 1057 1075	current filehandle
+T15	Equal 1076 1095	will continue to be
+E3	Equal:T15 Value-Arg:T16 Variable-Arg:T14
+T16	cfh 1100 1116	target directory
+T17	Pre 1126 1197	If the target directory already contains an entry with the name newname
+T18	Variable 1133 1149	target directory
+T19	newname 1190 1197	newname
+T20	Comparison 1158 1166	contains
+E4	Comparison:T20 Value-Arg:T19 Variable-Arg:T18
+T21	Extrinsic-Post 1199 1284	the source object must be compatible with the target: either both are non-directories
+T22	Extrinsic-Post 1286 1309	or both are directories
+T23	Extrinsic-Pre 1286 1309	or both are directories
+T24	Extrinsic-Pre 1199 1284	the source object must be compatible with the target: either both are non-directories
+R2	Transition Arg1:T17 Arg2:T21	
+R3	Transition Arg1:T17 Arg2:T22	
+T25	Extrinsic-Post 1311 1346	and the target must be empty <NULL>
+T26	source_cinfo 1203 1216	source object
+T27	target_cinfo 1245 1251	target
+T28	Comparison 1217 1235	must be compatible
+E5	Comparison:T28 Variable-Arg:T26 Value-Arg:T27
+T29	Value 1334 1339	empty
+T30	target_cinfo 1319 1325	target
+T31	Equal 1326 1333	must be
+E6	Equal:T31 Value-Arg:T29 Variable-Arg:T30
+R4	Transition Arg1:T23 Arg2:T25	
+R5	Transition Arg1:T24 Arg2:T25	
+T32	Pre 1349 1362	If compatible
+T33	Post 1349 1362	If compatible
+R6	Transition Arg1:T23 Arg2:T33	
+R7	Transition Arg1:T24 Arg2:T33	
+T34	Extrinsic-Post 1364 1394	the existing target is removed
+R8	Transition Arg1:T32 Arg2:T34	
+T35	Extrinsic-Post 1395 1419	before the rename occurs
+T36	Extrinsic-Pre 1364 1394	the existing target is removed
+R9	Transition Arg1:T36 Arg2:T35	
+T37	target_cinfo 1368 1383	existing target
+T38	OperationName 1406 1412	rename
+T39	Extrinsic-Pre 1508 1534	If they are not compatible
+T40	Extrinsic-Pre 1538 1580	if the target is a directory but not empty
+T41	Extrinsic-Post 1508 1534	If they are not compatible
+T42	Extrinsic-Post 1538 1580	if the target is a directory but not empty
+R10	Transition Arg1:T24 Arg2:T41	
+R11	Transition Arg1:T23 Arg2:T41	
+R12	Transition Arg1:T24 Arg2:T42	
+R13	Transition Arg1:T23 Arg2:T42	
+T43	Post 1582 1635	the server will return the error NFS4ERR_EXIST <NULL>
+R14	Transition Arg1:T40 Arg2:T43	
+R15	Transition Arg1:T39 Arg2:T43	
+T44	Value 1615 1628	NFS4ERR_EXIST
+T45	Variable 1629 1635	<NULL>
+T46	Assign 1598 1604	return
+E7	Assign:T46 Value-Arg:T44 Variable-Arg:T45
+A2	Server E7
+T47	Pre 1638 1729	If oldname and newname both refer to the same file (they might be hard links of each other)
+T48	Post 1732 1793	hen RENAME should perform no action and return success <NULL>
+R16	Transition Arg1:T47 Arg2:T48	
+T49	oldname 1641 1648	oldname
+T50	newname 1653 1660	newname
+T51	Variable 1684 1688	file
+T52	Equal 1666 1683	refer to the same
+E8	Equal:T52 Value-Arg:T51 Variable-Arg:T50
+E9	Equal:T52 Value-Arg:T51 Variable-Arg:T49
+T53	OperationName 1736 1742	RENAME
+T54	Value 1779 1786	success
+T55	Assign 1772 1778	return
+E10	Assign:T55 Value-Arg:T54 Variable-Arg:T56
+T56	Variable 1787 1793	<NULL>
+T57	OperationName 1833 1839	RENAME
+T58	Pre 2073 2114	f the oldname refers to a named attribute
+T59	Pre 2120 2226	he saved and current filehandles refer to the named attribute directories of different file system objects
+T60	Post 2119 2226	the saved and current filehandles refer to the named attribute directories of different file system objects
+R17	Transition Arg1:T58 Arg2:T60	
+T61	Post 2228 2263	the server will return NFS4ERR_XDEV
+R18	Transition Arg1:T59 Arg2:T61	
+T62	Assign 2244 2250	return
+E11	Assign:T62 Value-Arg:T63 Variable-Arg:T64
+A3	Server E11
+T63	Value 2251 2263	NFS4ERR_XDEV
+T64	Variable 2360 2366	<NULL>
+T65	Value 2099 2114	named attribute
+T66	oldname 2079 2086	oldname
+T67	Comparison 2087 2093	refers
+E12	Comparison:T67 Variable-Arg:T66 Value-Arg:T65
+T68	sfh 2123 2128	saved
+T69	cfh 2133 2152	current filehandles
+T70	Value 2166 2193	named attribute directories
+T71	Comparison 2153 2158	refer
+E13	Comparison:T71 Value-Arg:T70 Variable-Arg:T69
+E14	Comparison:T71 Value-Arg:T70 Variable-Arg:T68
+T72	Pre 2369 2412	If the oldname or newname is of zero length
+T73	Post 2414 2451	NFS4ERR_INVAL will be returned <NULL>
+T74	oldname 2376 2383	oldname
+T75	newname 2387 2394	newname
+T76	Value 2401 2412	zero length
+A4	Length T76
+T77	Equal 2395 2400	is of
+E15	Equal:T77 Value-Arg:T76 Variable-Arg:T75
+E16	Equal:T77 Value-Arg:T76 Variable-Arg:T74
+T78	Value 2414 2427	NFS4ERR_INVAL
+T79	Assign 2436 2444	returned
+E17	Assign:T79 Variable-Arg:T80 Value-Arg:T78
+T80	Variable 2445 2451	<NULL>
+R19	Transition Arg1:T72 Arg2:T73	
+T81	Pre 2963 3028	Based on the value of the fh_expire_type attribute for the object
+T82	Post 3030 3085	the filehandle may or may not expire on a RENAME <NULL>
+T83	OperationName 3072 3078	RENAME
+T84	cfh 3034 3044	filehandle
+T85	Variable 2989 3003	fh_expire_type
+R20	Transition Arg1:T81 Arg2:T82	
+T86	Extrinsic-Pre 3211 3295	On some servers, the filenames "." and ".." are illegal as either oldname or newname
+T87	Extrinsic-Post 3296 3347	and will result in the error NFS4ERR_BADNAME <NULL>
+T88	Value 3325 3340	NFS4ERR_BADNAME
+T89	Variable 3341 3347	<NULL>
+T90	Assign 3305 3311	result
+E18	Assign:T90 Value-Arg:T88 Variable-Arg:T89
+R21	Transition Arg1:T86 Arg2:T87	
+T91	Value 3232 3245	filenames "."
+T92	Value 3250 3254	".."
+T93	oldname 3277 3284	oldname
+T94	newname 3288 3295	newname
+T95	Equal 3259 3266	illegal
+E19	Equal:T95 Variable-Arg:T93 Value-Arg:T91
+A5	Negation E19
+E20	Equal:T95 Variable-Arg:T93 Value-Arg:T92
+A6	Negation E20
+E21	Equal:T95 Variable-Arg:T94 Value-Arg:T91
+A7	Negation E21
+E22	Equal:T95 Variable-Arg:T94 Value-Arg:T92
+A8	Negation E22
+T96	Extrinsic-Pre 3552 3617	If either of the source or target filehandles are not directories
+T97	Extrinsic-Post 3619 3663	the server will return NFS4ERR_NOTDIR <NULL>
+T98	Value 3642 3656	NFS4ERR_NOTDIR
+T99	Variable 3658 3663	NULL>
+T100	Assign 3635 3641	return
+E23	Assign:T100 Value-Arg:T98 Variable-Arg:T99
+A9	Server E23
+R22	Transition Arg1:T96 Arg2:T97	
+T101	cfh 3579 3597	target filehandles
+T102	sfh 3569 3575	source
+T103	Variable 3606 3617	directories
+T104	Equal 3598 3605	are not
+E24	Equal:T104 Value-Arg:T103 Variable-Arg:T101
+A10	Negation E24
+E25	Equal:T104 Value-Arg:T103 Variable-Arg:T102
+A11	Negation E25

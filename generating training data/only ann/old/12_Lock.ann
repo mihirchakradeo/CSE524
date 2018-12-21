@@ -1,0 +1,118 @@
+T1	offset 1869 1875	offset
+T2	length 1880 1886	length
+T3	cfh_locktype 1911 1920	lock type
+T4	Pre 1981 2009	If this is a reclaim request
+T5	Post 2011 2045	the reclaim parameter will be TRUE
+T6	reclaim 1994 2001	reclaim
+T7	reclaim 2015 2022	reclaim
+T8	Value 2041 2045	TRUE
+T9	Equal 2033 2040	will be
+E1	Equal:T9 Value-Arg:T8 Variable-Arg:T7
+R1	Transition Arg1:T4 Arg2:T5	
+T10	Variable 2002 2009	request
+T11	Equal 1984 1993	this is a
+E2	Equal:T11 Variable-Arg:T10 Value-Arg:T6
+T12	offset 2187 2193	offset
+T13	Variable 2206 2217	end-of-file
+T14	Pre 2261 2308	use a length field with all bits set to 1 (one)
+T15	length 2267 2273	length
+T16	Value 2301 2302	1
+A2	bits T15
+T17	Equal 2294 2300	set to
+E3	Equal:T17 Value-Arg:T16 Variable-Arg:T15
+T18	Post 2494 2529	the error NFS4ERR_INVAL will result
+T19	Value 2504 2517	NFS4ERR_INVAL
+T20	Equal 2518 2528	will resul
+E4	Equal:T20 Variable-Arg:T21 Value-Arg:T19
+T21	Variable 2530 2536	<NULL>
+T22	Pre 2318 2340	If the length is  zero
+T23	Pre 2342 2401	or if a length that is not all bits set to one is specified
+T24	Post 2403 2492	and the length when added to the offset exceeds the maximum 64-bit unsigned integer value
+T25	Pre 2403 2492	and the length when added to the offset exceeds the maximum 64-bit unsigned integer value
+R2	Transition Arg1:T25 Arg2:T18	
+R3	Transition Arg1:T23 Arg2:T24	
+R4	Transition Arg1:T22 Arg2:T24	
+T26	length 2325 2331	length
+T27	Value 2336 2340	zero
+T28	Equal 2332 2334	is
+E5	Equal:T28 Variable-Arg:T26 Value-Arg:T27
+T29	length 2350 2356	length
+A1	bits T29
+T30	Value 2385 2388	one
+T31	Equal 2365 2384	not all bits set to
+E6	Equal:T31 Value-Arg:T30 Variable-Arg:T29
+A3	Negation E6
+T32	length 2411 2417	length
+T33	offset 2436 2442	offset
+T34	Greater 2443 2450	exceeds
+E7	Greater:T34 Value-Arg:T35 Variable-Arg:T33
+T35	Value 2463 2492	64-bit unsigned integer value
+T36	Post 2821 2886	then such a 32-bit server MUST return the error NFS4ERR_BAD_RANGE
+T37	Pre 2683 2819	If the client specifies a range that overlaps one or more bytes beyond offset NFS4_UINT32_MAX but does not end at offset NFS4_UINT64_MAX
+T38	Value 2869 2886	NFS4ERR_BAD_RANGE
+T39	Assign 2847 2858	MUST return
+E8	Assign:T39 Variable-Arg:T40 Value-Arg:T38
+T40	Variable 2887 2893	<NULL>
+T41	Post 2933 2997	the owner, offset, and length of a conflicting lock are returned
+R5	Transition Arg1:T37 Arg2:T36	
+T42	Post 2154 2259	To lock the file from a specific offset through the end-of-file (no matter how long the file actually is)
+R6	Transition Arg1:T14 Arg2:T42	
+T43	Pre 2896 2931	In the case that the lock is denied
+T44	offset 2944 2950	offset
+T45	length 2956 2962	length
+T46	Variable 2937 2942	owner
+R7	Transition Arg1:T43 Arg2:T41	
+T47	Variable 2998 3004	<NULL>
+E9	Assign:T66 Variable-Arg:T47 Value-Arg:T45
+E10	Assign:T67 Value-Arg:T44 Variable-Arg:T47
+E11	Assign:T66 Variable-Arg:T47 Value-Arg:T46
+T49	Post 3019 3059	the current filehandle retains its value
+T50	Pre 3007 3017	On success
+T51	Value 3010 3017	success
+T52	Variable 3060 3066	<NULL>
+T53	Equal 3007 3009	On
+E12	Equal:T53 Value-Arg:T51 Variable-Arg:T52
+T54	cfh 3023 3041	current filehandle
+T55	cfh 3054 3059	value
+T56	Equal 3042 3049	retains
+E13	Equal:T56 Variable-Arg:T54 Value-Arg:T55
+T57	Extrinsic-Pre 3095 3183	If the server is unable to determine the exact offset and length of the conflicting lock
+T58	Post 3185 3288	the same offset and length that were provided in the arguments should be returned in the denied results
+R8	Transition Arg1:T57 Arg2:T58	
+T59	offset 3142 3148	offset
+T60	length 3153 3159	length
+T61	Variable 3167 3183	conflicting lock
+T62	offset 3194 3200	offset
+T63	length 3205 3211	length
+E14	Assign:T48 Variable-Arg:T65 Value-Arg:T63
+T65	Variable 3274 3288	denied results
+E15	Assign:T48 Variable-Arg:T65 Value-Arg:T62
+A4	Server E8
+T66	Assign 2989 2997	returned
+T67	Assign 2989 2997	returned
+T48	Assign 3258 3266	returned
+T64	Post 4197 4248	the server will return the error NFS4ERR_LOCK_RANGE
+T68	Pre 3810 3845	When the client makes a lock reques
+T70	Extrinsic-Pre 3847 3952	that corresponds to a range that the lock-owner has locked already (with the same or different lock type)
+T71	Extrinsic-Pre 3954 3988	or to a sub-region of such a range
+T72	Extrinsic-Post 3954 3988	or to a sub-region of such a range
+T73	Extrinsic-Pre 3990 4089	or to a region that includes multiple locks already granted to that lock-owner, in whole or in part
+T74	Extrinsic-Post 3990 4089	or to a region that includes multiple locks already granted to that lock-owner, in whole or in part
+T69	Extrinsic-Post 3847 3952	that corresponds to a range that the lock-owner has locked already (with the same or different lock type)
+T75	Extrinsic-Pre 4091 4195	and the server does not support such locking operations (i.e., does not support POSIX locking semantics)
+T76	Extrinsic-Post 4091 4195	and the server does not support such locking operations (i.e., does not support POSIX locking semantics)
+T77	OperationName 3834 3838	lock
+R9	Transition Arg1:T68 Arg2:T69	
+T78	Value 3869 3913	range that the lock-owner has locked already
+R10	Transition Arg1:T68 Arg2:T72	
+R11	Transition Arg1:T68 Arg2:T74	
+R12	Transition Arg1:T70 Arg2:T76	
+R13	Transition Arg1:T71 Arg2:T76	
+R14	Transition Arg1:T73 Arg2:T76	
+R15	Transition Arg1:T75 Arg2:T64	
+T79	Value 4230 4248	NFS4ERR_LOCK_RANGE
+T80	Variable 4249 4255	<NULL>
+T81	Assign 4213 4219	return
+E16	Assign:T81 Value-Arg:T79 Variable-Arg:T80
+A5	Server E16
+T82	OperationName 1791 1795	LOCK

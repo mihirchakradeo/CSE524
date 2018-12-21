@@ -1,0 +1,13 @@
+T1	Assign 310 313	Set
+E1	Assign:T1 Variable-Arg:T2 Value-Arg:T3
+A1	Server E1
+T2	cfh 318 336	current filehandle
+T3	sfh 357 373	saved filehandle
+T4	Assign 421 427	return
+E2	Assign:T4 Value-Arg:T5 Variable-Arg:T6
+A2	Server E2
+T5	Value 438 455	NFS4ERR_RESTOREFH
+T6	Variable 456 462	<NULL>
+T7	Pre 383 414	If there is no saved filehandle
+T8	Post 421 455	return the error NFS4ERR_RESTOREFH
+R1	Transition Arg1:T7 Arg2:T8	

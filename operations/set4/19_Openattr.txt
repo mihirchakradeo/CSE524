@@ -1,0 +1,30 @@
+16.17.  Operation 19: OPENATTR - Open Named Attribute Directory
+
+16.17.1.  SYNOPSIS
+
+     (cfh) createdir -> (cfh)
+
+16.17.2.  ARGUMENT
+
+   struct OPENATTR4args {
+           /* CURRENT_FH: object */
+           bool    createdir;
+   };
+
+16.17.3.  RESULT
+
+   struct OPENATTR4res {
+           /* CURRENT_FH: named attr directory */
+           nfsstat4        status;
+   };
+
+16.17.4.  DESCRIPTION
+
+The OPENATTR operation is used to obtain the filehandle of the named attribute directory associated with the current filehandle <NULL>.  The result of the OPENATTR will be a filehandle to an object of type NF4ATTRDIR <NULL>.  From this filehandle, READDIR and LOOKUP operations can be used to obtain filehandles for the various named attributes associated with the original file system object <NULL>.  Filehandles returned within the named attribute directory will have a type of NF4NAMEDATTR <NULL>.
+
+The createdir argument allows the client to signify if a named attribute directory should be created as a result of the OPENATTR operation <NULL>.  Some clients may use the OPENATTR operation with a value of FALSE for createdir to determine if any named attributes exist for the object <NULL>.  If none exist, then NFS4ERR_NOENT will be returned <NULL>.  If createdir has a value of TRUE and no named attribute directory exists, one is created <NULL>.  The creation of a named attribute directory assumes that the server has implemented named attribute support in this fashion and is not required to do so by this definition <NULL>.
+
+16.17.5.  IMPLEMENTATION
+
+If the server does not support named attributes for the current filehandle, an error of NFS4ERR_NOTSUPP will be returned to the client <NULL>.
+

@@ -1,0 +1,8 @@
+T1	OperationName 319 324	PUTFH
+T2	Pre 319 324	PUTFH
+T3	Post 325 407	replaces the current filehandle with the filehandle provided as an argument <NULL>
+R1	Transition Arg1:T2 Arg2:T3	
+T4	cfh 338 356	current filehandle
+T5	filehandle 366 400	filehandle provided as an argument
+T6	Assign 325 333	replaces
+E1	Assign:T6 Variable-Arg:T4 Value-Arg:T5
